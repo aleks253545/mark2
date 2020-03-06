@@ -15,17 +15,17 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const carts_service_1 = require("./carts.service");
 let CartsController = class CartsController {
-    constructor(LikesService) {
-        this.LikesService = LikesService;
+    constructor(CartsService) {
+        this.CartsService = CartsService;
     }
     createCartRecord(data) {
-        return this.LikesService.create(data);
+        return this.CartsService.create(data);
     }
-    getAllCartRecord() {
-        return this.LikesService.read();
+    getAllCartProduct(userId) {
+        return this.CartsService.getAllCartRecord(userId);
     }
     destroyCartRecord(data) {
-        const like = this.LikesService.destroy(data);
+        const like = this.CartsService.destroy(data);
         return like;
     }
 };
@@ -38,10 +38,11 @@ __decorate([
 ], CartsController.prototype, "createCartRecord", null);
 __decorate([
     common_1.Get(),
+    __param(0, common_1.Query('userId')),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
-], CartsController.prototype, "getAllCartRecord", null);
+], CartsController.prototype, "getAllCartProduct", null);
 __decorate([
     common_1.Delete(),
     __param(0, common_1.Body()),

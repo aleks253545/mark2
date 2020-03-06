@@ -33,7 +33,7 @@ let ProductsService = ProductsService_1 = class ProductsService {
         return Promise.all(products.map(product => this.setCounter(product)));
     }
     async setCounter(product) {
-        const totalQuantity = await +counters_service_1.client.get(product.id);
+        const totalQuantity = +await counters_service_1.client.get(product.id.toString());
         if (totalQuantity > 0) {
             await counters_service_1.client.hmset('products', product.id.toString(), '1');
         }
@@ -46,7 +46,7 @@ let ProductsService = ProductsService_1 = class ProductsService {
     async create(data) {
         const product = await this.productsRepository.create(data);
         await this.productsRepository.save(product);
-        counters_service_1.client.set(product.id, data.quantity);
+        counters_service_1.client.set(product.id, data.quantity.toString());
         return product;
     }
     async read(id) {

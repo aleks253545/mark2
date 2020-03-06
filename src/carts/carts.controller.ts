@@ -1,29 +1,29 @@
 
-import { Controller, Get, Post, Delete, Put, Body, Param } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Put, Body, Param, Query } from '@nestjs/common';
 import { CartsService } from './carts.service';
 import { CartsEntity} from './carts.entity';
 import CardsDTO from './carts.dto'
 @Controller('carts')
 export class CartsController {
   constructor(
-    private LikesService: CartsService
+    private CartsService: CartsService
     ) {}
 
   @Post()
   createCartRecord(@Body() data: CardsDTO): Promise<CartsEntity>{ 
-    return this.LikesService.create(data);
+    return this.CartsService.create(data);
   }
 
   @Get()
-  getAllCartRecord() {
-    return this.LikesService.read();
+  getAllCartProduct(@Query('userId') userId: string) {
+    return this.CartsService.getAllCartRecord(userId);
   }
 
 
   
   @Delete()
   destroyCartRecord(@Body() data:{noteId:string, userId:string }) {
-    const like = this.LikesService.destroy(data);
+    const like = this.CartsService.destroy(data);
     return like;
   }
 

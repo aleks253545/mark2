@@ -26,7 +26,8 @@ export class ProductsService {
     }
 
     async setCounter (product) {
-      const totalQuantity = await + client.get(product.id);
+      const totalQuantity =+ await  client.get(product.id.toString());
+
       if( totalQuantity > 0 ){
         await client.hmset('products',product.id.toString(),'1');
       } else { 
@@ -39,7 +40,7 @@ export class ProductsService {
     async create(data: ProductsDTO) {
       const product = await this.productsRepository.create(data);
       await this.productsRepository.save(product);
-      client.set(product.id,data.quantity);
+      client.set(product.id,data.quantity.toString());
       return product; 
     }
 

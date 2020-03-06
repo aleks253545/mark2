@@ -2,10 +2,10 @@ import { CartsService } from './carts.service';
 import { CartsEntity } from './carts.entity';
 import CardsDTO from './carts.dto';
 export declare class CartsController {
-    private LikesService;
-    constructor(LikesService: CartsService);
+    private CartsService;
+    constructor(CartsService: CartsService);
     createCartRecord(data: CardsDTO): Promise<CartsEntity>;
-    getAllCartRecord(): any;
+    getAllCartProduct(userId: string): Promise<void>;
     destroyCartRecord(data: {
         noteId: string;
         userId: string;

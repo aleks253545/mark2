@@ -32,31 +32,32 @@ let CartsService = CartsService_1 = class CartsService {
                 productId: data.productId
             }
         });
-        const porductsCounter = await +counters_service_1.client.hget('products', data.productId), totalQuantity = await +counters_service_1.client.get(data.productId.toString());
+        const porductsCounter = +await counters_service_1.client.hget('products', data.productId.toString()), totalQuantity = +await counters_service_1.client.get(data.productId.toString());
         if (record) {
-            const cartCounter = await +counters_service_1.client.hget(data.userId.toString(), data.productId.toString());
+            const cartCounter = +await counters_service_1.client.hget(data.userId.toString(), data.productId.toString());
             await counters_service_1.client.hset(data.userId.toString(), data.productId.toString(), (cartCounter + porductsCounter).toString());
-            await counters_service_1.client.get(data.productId, (totalQuantity - porductsCounter).toString());
+            await counters_service_1.client.get(data.productId.toString(), (totalQuantity - porductsCounter).toString());
         }
         else {
             await counters_service_1.client.hset(data.userId.toString(), data.productId.toString(), porductsCounter.toString());
-            await counters_service_1.client.hset(data.productId, (totalQuantity - porductsCounter).toString());
+            await counters_service_1.client.hset(data.productId.toString(), (totalQuantity - porductsCounter).toString());
         }
-        if (totalQuantity - porductsCounter > 0) {
-            await counters_service_1.client.hset('products', data.productId, '1');
+        if ((totalQuantity - porductsCounter) > 0) {
+            await counters_service_1.client.hset('products', data.productId.toString(), '1');
         }
         else {
-            await counters_service_1.client.hset('products', data.productId, '0');
+            await counters_service_1.client.hset('products', data.productId.toString(), '0');
         }
         const card = await this.cartsRepository.create(data);
         return await this.cartsRepository.save(card);
     }
-    async read(id) {
-        return await this.cartsRepository.find({
+    async getAllCartRecord(userId) {
+        let usersId = await this.cartsRepository.find({
             where: {
-                noteId: id,
+                userId: userId
             }
         });
+        this.logger.debug(usersId);
     }
     async destroy(data) {
         await this.cartsRepository.delete({

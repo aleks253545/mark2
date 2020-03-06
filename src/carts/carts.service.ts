@@ -14,7 +14,7 @@ export class CartsService {
     private readonly cartsRepository: Repository<CartsEntity>,
     @InjectRepository(ProductsEntity) 
     private readonly notesRepository: Repository<ProductsEntity>,
-    ) {}
+  ) {}
 
     private readonly logger = new Logger(CartsService.name);
 
@@ -25,25 +25,25 @@ export class CartsService {
           productId : data.productId
         }
       })
-      const porductsCounter =  await + client.hget('products',data.productId),
-      totalQuantity =  await + client.get(data.productId.toString());
+      const porductsCounter =+  await  client.hget('products',data.productId.toString()),
+      totalQuantity = +  await  client.get(data.productId.toString());
       if(record){ 
-        const cartCounter = await + client.hget(data.userId.toString(), data.productId.toString());
+        const cartCounter = +  await client.hget(data.userId.toString(), data.productId.toString());
         await client.hset(
           data.userId.toString(),
           data.productId.toString(),
           (cartCounter + porductsCounter).toString()
         )
-        await client.get(data.productId,(totalQuantity - porductsCounter).toString())
+        await client.get(data.productId.toString(),(totalQuantity - porductsCounter).toString())
       } else {
         await client.hset(data.userId.toString(), data.productId.toString(), porductsCounter.toString());
-        await client.hset(data.productId,(totalQuantity - porductsCounter).toString());  
+        await client.hset(data.productId.toString(),(totalQuantity - porductsCounter).toString());  
       }
 
-      if(totalQuantity - porductsCounter > 0){
-        await client.hset('products',data.productId,'1');
+      if((totalQuantity - porductsCounter) > 0){
+        await client.hset('products',data.productId.toString(),'1');
       } else {
-        await client.hset('products',data.productId,'0');
+        await client.hset('products',data.productId.toString(),'0');
       }
       
       const card = await this.cartsRepository.create(data);
@@ -51,12 +51,13 @@ export class CartsService {
       
     }
 
-    async read(id: string) {
-      return await this.cartsRepository.find({
+    async getAllCartRecord(userId: string) {
+      let usersId =  await this.cartsRepository.find({
         where: {
-          noteId: id,
+          userId:userId
         }
-      });
+      }); 
+      this.logger.debug(usersId)
     }
     async destroy(data:{userId: string}) {
       await this.cartsRepository.delete({
