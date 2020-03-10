@@ -10,7 +10,7 @@ export class CartsController {
     ) {}
 
   @Post()
-  createCartRecord(@Body() data: CardsDTO): Promise<CartsEntity>{ 
+  createCartRecord(@Body() data: CardsDTO){ 
     return this.CartsService.create(data);
   }
 

@@ -9,6 +9,8 @@ export declare class CountersService {
     private readonly logger;
     update(id: string, data: {
         value: number;
+        page: string;
+        userId: string;
     }): Promise<number>;
     destroy(data: {
         userdId: string;

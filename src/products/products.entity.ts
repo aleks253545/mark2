@@ -12,7 +12,7 @@ export class ProductsEntity {
   user:string;
 
   @Column({ nullable: true })
-    userId: string;
+  userId: string;
 
   @Column({
     type:'text'

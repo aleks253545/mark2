@@ -31,10 +31,28 @@ let CountersService = CountersService_1 = class CountersService {
     }
     async update(id, data) {
         const prodTotalQuantity = +await exports.client.get(id.toString()), prodCounter = +await exports.client.hget('products', id.toString());
-        if (data.value > 0 && data.value < prodTotalQuantity || data.value === prodTotalQuantity) {
-            await exports.client.hmset('products', id.toString(), data.value.toString());
+        if (data.page === 'products') {
+            if (data.value > 0 && data.value < prodTotalQuantity || data.value === prodTotalQuantity) {
+                await exports.client.hmset('products', id.toString(), data.value.toString());
+            }
+            return +await exports.client.hget('products', id.toString());
         }
-        return +await exports.client.hget('products', id.toString());
+        else if (data.page === 'cart') {
+            const cartCounter = +await exports.client.hget(data.userId, id);
+            this.logger.debug(cartCounter);
+            if (cartCounter > data.value) {
+                await exports.client.hmset(data.userId.toString(), id.toString(), data.value.toString());
+                await exports.client.set(id.toString(), (prodTotalQuantity + cartCounter - data.value).toString());
+                return +await exports.client.hget(data.userId.toString(), id.toString());
+            }
+            else if (cartCounter < data.value &&
+                (data.value - cartCounter) < prodTotalQuantity ||
+                (data.value - cartCounter) === prodTotalQuantity) {
+                await exports.client.hmset([data.userId.toString(), id.toString(), data.value.toString()]);
+                await exports.client.set(id.toString(), (prodTotalQuantity - cartCounter + data.value).toString());
+                return +await exports.client.hget(data.userId, id.toString());
+            }
+        }
     }
     async destroy(data) {
         return null;

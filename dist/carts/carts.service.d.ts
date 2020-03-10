@@ -7,8 +7,9 @@ export declare class CartsService {
     private readonly notesRepository;
     constructor(cartsRepository: Repository<CartsEntity>, notesRepository: Repository<ProductsEntity>);
     private readonly logger;
-    create(data: CardsDTO): Promise<CartsEntity>;
-    getAllCartRecord(userId: string): Promise<void>;
+    create(data: CardsDTO): Promise<number>;
+    getAllCartRecord(userId: string): Promise<any[]>;
+    setCounter(item: any): Promise<any>;
     destroy(data: {
         userId: string;
     }): Promise<{

@@ -34,7 +34,7 @@ __decorate([
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", Promise)
+    __metadata("design:returntype", void 0)
 ], CartsController.prototype, "createCartRecord", null);
 __decorate([
     common_1.Get(),

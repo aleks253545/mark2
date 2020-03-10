@@ -18,46 +18,52 @@ export class CartsService {
 
     private readonly logger = new Logger(CartsService.name);
 
-    async create(data: CardsDTO): Promise<CartsEntity> {
+    async create(data: CardsDTO) {
+      this.logger.debug(data);
       const record = this.cartsRepository.find({
         where: {
           userId: data.userId,
           productId : data.productId
         }
       })
-      const porductsCounter =+  await  client.hget('products',data.productId.toString()),
+      const porductsCounter = + await  client.hget('products',data.productId.toString()),
       totalQuantity = +  await  client.get(data.productId.toString());
-      if(record){ 
-        const cartCounter = +  await client.hget(data.userId.toString(), data.productId.toString());
-        await client.hset(
-          data.userId.toString(),
-          data.productId.toString(),
-          (cartCounter + porductsCounter).toString()
-        )
-        await client.get(data.productId.toString(),(totalQuantity - porductsCounter).toString())
-      } else {
-        await client.hset(data.userId.toString(), data.productId.toString(), porductsCounter.toString());
-        await client.hset(data.productId.toString(),(totalQuantity - porductsCounter).toString());  
+      if(totalQuantity > porductsCounter || totalQuantity === porductsCounter){
+        if((await record).length){ 
+        const cartCounter = + await  client.hget(data.userId.toString(), data.productId.toString());
+        this.logger.debug(1);
+        await client.hset(data.userId.toString(), data.productId.toString(),(cartCounter + porductsCounter).toString());
+        await client.set(data.productId.toString(),(totalQuantity - porductsCounter).toString())
+        } else {
+          await client.hset(data.userId.toString(), data.productId.toString(), porductsCounter.toString());
+          await client.set(data.productId.toString(),(totalQuantity - porductsCounter).toString()); 
+          const card = await this.cartsRepository.create(data);
+          await this.cartsRepository.save(card);
+        }
+        if((totalQuantity - porductsCounter) > 0){
+          await client.hset('products',data.productId.toString(),'1');
+        } else {
+          await client.hset('products',data.productId.toString(),'0');
+        }
       }
-
-      if((totalQuantity - porductsCounter) > 0){
-        await client.hset('products',data.productId.toString(),'1');
-      } else {
-        await client.hset('products',data.productId.toString(),'0');
-      }
-      
-      const card = await this.cartsRepository.create(data);
-      return await this.cartsRepository.save(card);
+      return   + await client.hget('products',data.productId.toString());
       
     }
 
     async getAllCartRecord(userId: string) {
-      let usersId =  await this.cartsRepository.find({
+      let cartList =  await this.cartsRepository.find({
         where: {
-          userId:userId
-        }
+          userId
+        },
+        relations:['product']
       }); 
-      this.logger.debug(usersId)
+      this.logger.debug(cartList);
+    return  Promise.all(cartList.map(item => this.setCounter(item)))
+    }
+
+    async setCounter (item) {
+      item.product.quantity =  + await client.hget(item.userId.toString(),item.productId.toString());
+      return await item.product
     }
     async destroy(data:{userId: string}) {
       await this.cartsRepository.delete({

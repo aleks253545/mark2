@@ -23,13 +23,33 @@ export class CountersService {
     
     private readonly logger = new Logger(CountersService.name);
 
-    async update( id: string, data:{value:number}) {
+    async update( id: string, data:{value:number, page: string, userId: string}) {
       const prodTotalQuantity = + await client.get(id.toString()),
       prodCounter  =  + await  client.hget('products',id.toString());
-      if(data.value > 0  &&  data.value < prodTotalQuantity || data.value === prodTotalQuantity){
-        await client.hmset('products',id.toString(),data.value.toString());
+      if(data.page === 'products'){
+        if(data.value > 0  &&  data.value < prodTotalQuantity || data.value === prodTotalQuantity){
+          await client.hmset('products',id.toString(),data.value.toString());
+        }
+        return  + await  client.hget('products',id.toString());
+      }else if(data.page === 'cart') {
+        const cartCounter = + await client.hget(data.userId,id);
+        this.logger.debug(cartCounter);
+         
+        if( cartCounter > data.value ){
+          await client.hmset(data.userId.toString(),id.toString(),data.value.toString());
+          await client.set(id.toString(),(prodTotalQuantity + cartCounter - data.value).toString());
+          return + await client.hget(data.userId.toString(),id.toString());
+        } else if(
+          cartCounter < data.value && 
+          (data.value - cartCounter) < prodTotalQuantity || 
+          (data.value - cartCounter) === prodTotalQuantity 
+          ) {
+            await client.hmset([data.userId.toString(), id.toString(), data.value.toString()]);
+            await client.set(id.toString(),(prodTotalQuantity - cartCounter + data.value).toString());
+            return + await client.hget(data.userId, id.toString());
+        }
       }
-      return  + await  client.hget('products',id.toString());
+
     }
 
     async destroy(data: {userdId: string, productId: string}) {
