@@ -20,11 +20,13 @@ export class CartsController {
   }
 
 
-  
-  @Delete()
-  destroyCartRecord(@Body() data:{noteId:string, userId:string }) {
-    const like = this.CartsService.destroy(data);
-    return like;
+  @Put()
+  updateCart(@Body() data:{userId: string, type: string } ){
+    return this.CartsService.update(data);
   }
 
+  @Delete(':id')
+  destroyCartRecord(@Param('id') id: string ) {
+    return this.CartsService.destroy(id);
+  }
 }

@@ -24,9 +24,11 @@ let CartsController = class CartsController {
     getAllCartProduct(userId) {
         return this.CartsService.getAllCartRecord(userId);
     }
-    destroyCartRecord(data) {
-        const like = this.CartsService.destroy(data);
-        return like;
+    updateCart(data) {
+        return this.CartsService.update(data);
+    }
+    destroyCartRecord(id) {
+        return this.CartsService.destroy(id);
     }
 };
 __decorate([
@@ -44,10 +46,17 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "getAllCartProduct", null);
 __decorate([
-    common_1.Delete(),
+    common_1.Put(),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", void 0)
+], CartsController.prototype, "updateCart", null);
+__decorate([
+    common_1.Delete(':id'),
+    __param(0, common_1.Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "destroyCartRecord", null);
 CartsController = __decorate([

@@ -6,7 +6,15 @@ import { ProductsEntity } from 'src/products/products.entity';
 import { ProductsDTO } from './products.dto';
 import { UsersEntity } from 'src/users/users.entity';
 import { client } from '../counters/counters.service';
-
+var Minio = require('minio');
+var minioClient = new Minio.Client({
+  endPoint: 'localhost',
+  port: 9000,
+  useSSL: false,
+  accessKey: 'minioadmin',
+  secretKey: 'minioadmin'
+});
+let file = '/README.md';
 @Injectable()
 export class ProductsService {
   constructor(
@@ -36,12 +44,28 @@ export class ProductsService {
       product.quantity =  + await  client.hget('products',product.id.toString());
       return product
     }
-
     async create(data: ProductsDTO) {
       const product = await this.productsRepository.create(data);
       await this.productsRepository.save(product);
       client.set(product.id,data.quantity.toString());
+    //   minioClient.makeBucket('europetrip', 'us-east-1', function(err) {
+    //     if (err) return console.log(err)
+     
+    //     console.log('Bucket created successfully in "us-east-1".')
+     
+    //     var metaData = {
+    //         'Content-Type': 'application/octet-stream',
+    //         'X-Amz-Meta-Testing': 1234,
+    //         'example': 5678
+    //     }
+    //     // Using fPutObject API upload your file to the bucket europetrip.
+    //     minioClient.fPutObject('europetrip', 'photos-europe.tar', file, metaData, function(err, etag) {
+    //       if (err) return console.log(err)
+    //       console.log('File uploaded successfully.')
+    //     });
+    // });
       return product; 
+      
     }
 
     async read(id: string) {

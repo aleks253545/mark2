@@ -19,6 +19,15 @@ const typeorm_2 = require("typeorm");
 const products_entity_1 = require("./products.entity");
 const users_entity_1 = require("../users/users.entity");
 const counters_service_1 = require("../counters/counters.service");
+var Minio = require('minio');
+var minioClient = new Minio.Client({
+    endPoint: 'localhost',
+    port: 9000,
+    useSSL: false,
+    accessKey: 'minioadmin',
+    secretKey: 'minioadmin'
+});
+let file = '/README.md';
 let ProductsService = ProductsService_1 = class ProductsService {
     constructor(productsRepository, usersRepository) {
         this.productsRepository = productsRepository;

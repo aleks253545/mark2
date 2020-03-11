@@ -10,9 +10,9 @@ export declare class CartsService {
     create(data: CardsDTO): Promise<number>;
     getAllCartRecord(userId: string): Promise<any[]>;
     setCounter(item: any): Promise<any>;
-    destroy(data: {
+    destroy(cartId: string): Promise<CartsEntity[]>;
+    update(data: {
         userId: string;
-    }): Promise<{
-        deleted: boolean;
-    }>;
+        type: string;
+    }): Promise<any[]>;
 }

@@ -19,7 +19,6 @@ export class CartsService {
     private readonly logger = new Logger(CartsService.name);
 
     async create(data: CardsDTO) {
-      this.logger.debug(data);
       const record = this.cartsRepository.find({
         where: {
           userId: data.userId,
@@ -31,7 +30,6 @@ export class CartsService {
       if(totalQuantity > porductsCounter || totalQuantity === porductsCounter){
         if((await record).length){ 
         const cartCounter = + await  client.hget(data.userId.toString(), data.productId.toString());
-        this.logger.debug(1);
         await client.hset(data.userId.toString(), data.productId.toString(),(cartCounter + porductsCounter).toString());
         await client.set(data.productId.toString(),(totalQuantity - porductsCounter).toString())
         } else {
@@ -57,18 +55,50 @@ export class CartsService {
         },
         relations:['product']
       }); 
-      this.logger.debug(cartList);
     return  Promise.all(cartList.map(item => this.setCounter(item)))
     }
 
     async setCounter (item) {
+      item.product.cartId = item.cartId;
       item.product.quantity =  + await client.hget(item.userId.toString(),item.productId.toString());
       return await item.product
     }
-    async destroy(data:{userId: string}) {
-      await this.cartsRepository.delete({
-        userId:data.userId
-      });
-      return {deleted: true}
+
+    async destroy(cartId: string ) {
+      let cartRec = await this.cartsRepository.find({cartId});
+      let cartCounter = + await client.hget(cartRec[0].userId, cartRec[0].productId),
+            totalQuantity = + await client.get(cartRec[0].productId);
+            await client.set(cartRec[0].productId, (cartCounter + totalQuantity).toString());
+            await client.del(cartRec[0].userId);
+    await this.cartsRepository.delete({cartId});
+    return await this.cartsRepository.find({
+      where: {
+        userId: cartRec[0].userId
+      }
+    })
     }
+    
+    async update(data: {userId: string, type: string}){
+      let prodIds = await this.cartsRepository.find({
+        where: {
+          userId: data.userId
+        },
+        select : ['productId']
+      })
+      if(data.type === 'clear') {
+        for(let i = 0; i < prodIds.length; i++){
+            let cartCounter = + await client.hget(data.userId.toString(),prodIds[i].productId.toString()),
+            totalQuantity = + await client.get(prodIds[i].productId.toString());
+            await client.set(prodIds[i].productId.toString(), (cartCounter + totalQuantity).toString());
+            await client.del(data.userId.toString());
+        } 
+      } else if(data.type === 'buy') {
+          await client.del(data.userId.toString());
+      }
+      await this.cartsRepository.delete({
+        userId: data.userId
+      });
+      return  [];
+    }
+    
 }
