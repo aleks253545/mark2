@@ -4,8 +4,8 @@ import { CartsEntity } from '../carts/carts.entity';
 
 @Entity('products')
 export class ProductsEntity {
-  @PrimaryGeneratedColumn('uuid') 
   @OneToMany(type => CartsEntity , carts => carts.productId)
+  @PrimaryGeneratedColumn('uuid') 
   id: string;
   
   @ManyToOne(type => UsersEntity, user => user.id)

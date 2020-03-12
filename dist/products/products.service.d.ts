@@ -2,6 +2,7 @@ import { Repository } from 'typeorm';
 import { ProductsEntity } from 'src/products/products.entity';
 import { ProductsDTO } from './products.dto';
 import { UsersEntity } from 'src/users/users.entity';
+export declare var minioClient: any;
 export declare class ProductsService {
     private readonly productsRepository;
     private readonly usersRepository;
@@ -9,7 +10,7 @@ export declare class ProductsService {
     private readonly logger;
     showProducts(offset: any): Promise<any[]>;
     setCounter(product: any): Promise<any>;
-    create(data: ProductsDTO): Promise<ProductsEntity>;
+    create(image: any, data: ProductsDTO): Promise<ProductsEntity>;
     read(id: string): Promise<ProductsEntity>;
     update(id: string, data: any): Promise<ProductsEntity>;
     destroy(id: string): Promise<{

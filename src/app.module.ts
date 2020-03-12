@@ -14,6 +14,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { CountersController } from './counters/counters.controller';
 import { CountersService } from './counters/counters.service';
 import { CountersModule} from './counters/products.module'
+import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
 
 @Module({
   imports: [
@@ -30,6 +31,9 @@ import { CountersModule} from './counters/products.module'
     UsersModule,
     ProductsModule,
     CartsModule,
+    MulterModule.register({
+      dest: './uploads'
+    }),
     ScheduleModule.forRoot()
   ],
   controllers: [ProductsController, CartsController, UsersController,CountersController],

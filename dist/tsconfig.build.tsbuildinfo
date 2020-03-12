@@ -2138,7 +2138,7 @@
         "signature": "8f1241f5d9f0d3d72117768b3c974e462840fbd85026fb66685078945404cf2f"
       },
       "../src/products/products.entity.ts": {
-        "version": "ed77c367b32b0a9fe72a739a59ac771b39aa0dfae293d5b1a81848b61b6ab551",
+        "version": "ed3d4580e23b480a235bb1b847ce37f34547f2ad72dc830bec4a8f3aa8ce387d",
         "signature": "4e2a2c017e974438ba04b372fe260f5e202927bf5af0e5acca18527e25ab58b9"
       },
       "../src/carts/carts.entity.ts": {
@@ -2218,8 +2218,8 @@
         "signature": "5dbcffbdffdded9b94da615dc0ec553822c816d027e1846b5db4cea3a30462dd"
       },
       "../src/products/products.service.ts": {
-        "version": "ba0bea6e2adb6827f99729d9e5325519098bdb5efceac87b9061cf997c03dd4b",
-        "signature": "c2f2afdaa95d1682d1d1699557b471a91e43c6788f29f247fe905739018bf74f"
+        "version": "dca423b13f14477643cd2ccbcf46f0babfb5220fc1c9a7eca742afca9a61aa02",
+        "signature": "f9a83189ea0f1e4001f8120ffe1641882f50c94a86f59d9c777dd35acfd81498"
       },
       "../node_modules/@nestjs/core/adapters/http-adapter.d.ts": {
         "version": "71cc7da1ef9d96f44a214a43017535538b47988d4bc9dedbf7592d2f9fe10da9",
@@ -2290,8 +2290,8 @@
         "signature": "e3cd60be3c4f95c43420be67eaa21637585b7c1a8129f9b39983bbd294f9513c"
       },
       "../src/products/products.controller.ts": {
-        "version": "ecc6d3890f2dd117ebbbf1fff1c357613473e2bcfd898278f05a19e0610f8e31",
-        "signature": "812c4e8597bf51a4a201a5c182252e2ce5bc17fae3fd248ab99f8b3d7ab422ce"
+        "version": "be3cb45063adaada52beac8e4348648a46d6fbce8dbfd86ac688f22ded62e107",
+        "signature": "5bc685bcba5f4eef22648720ae81990e011839ff4e8b21b8ec03c9ac2ed3df7c"
       },
       "../src/products/products.module.ts": {
         "version": "d34890ed34bfb8cb3067f20dacef84fccd8f5a90a82d59e168dfcd87e6b89f95",
@@ -2302,7 +2302,7 @@
         "signature": "0a86518d6cb88c158afda011ee1c8c5852dfa337127c6382f786fdea3b322801"
       },
       "../src/carts/carts.service.ts": {
-        "version": "6563fecb848d5ebc15ebbb6ebbcb921c2dd79b29a74e854a99294ee2eedd4af0",
+        "version": "7980ab641e773ba422674e5d0a843b40b8caf4e2869bba15c9c1fb5c9b5cd586",
         "signature": "e13dbfd60f69daeeb872aaffdf051578ba0cf968deeb72ba7e20673bc0c60ff2"
       },
       "../src/carts/carts.controller.ts": {
@@ -2322,7 +2322,7 @@
         "signature": "3d1e4a349bd35c570cb42591fafe90c3018debb5c6d2a33f0a7dff16fba97be9"
       },
       "../src/app.module.ts": {
-        "version": "c6b70c8bb5996155971456648e74409debbf19666c70ef992a3622d002913c73",
+        "version": "eaaf13d392f58ee902381432b2e964ab9dd4755bcafafb0f63ab1f1dda086d29",
         "signature": "b82491e2990291580288c5602d4c017238977749d52b17391f0e45d9a29be644"
       },
       "../node_modules/@nestjs/core/adapters/index.d.ts": {
@@ -7301,6 +7301,7 @@
         "../node_modules/@nestjs/common/index.d.ts",
         "../node_modules/@nestjs/typeorm/index.d.ts",
         "../node_modules/typeorm/index.d.ts",
+        "../node_modules/@types/node/path.d.ts",
         "../src/products/products.entity.ts",
         "../src/products/products.dto.ts",
         "../src/users/users.entity.ts",
@@ -7487,6 +7488,7 @@
         "../src/carts/carts.dto.ts",
         "../node_modules/@types/node/worker_threads.d.ts",
         "../src/counters/counters.service.ts",
+        "../src/products/products.service.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.5/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -7549,6 +7551,7 @@
         "../src/counters/counters.controller.ts",
         "../src/counters/counters.service.ts",
         "../src/counters/products.module.ts",
+        "../node_modules/@nestjs/platform-express/multer/multer.module.d.ts",
         "../node_modules/@types/node/fs.d.ts",
         "../node_modules/@types/node/ts3.5/fs.d.ts",
         "../node_modules/@types/node/util.d.ts",
@@ -14129,7 +14132,6 @@
       "../node_modules/@nestjs/typeorm/dist/typeorm.module.d.ts",
       "../node_modules/@nestjs/typeorm/dist/index.d.ts",
       "../node_modules/@nestjs/typeorm/index.d.ts",
-      "../src/products/products.entity.ts",
       "../src/carts/carts.entity.ts",
       "../src/users/users.entity.ts",
       "../node_modules/@nestjs/schedule/dist/enums/cron-expression.enum.d.ts",
@@ -14166,15 +14168,10 @@
       "../node_modules/@nestjs/platform-express/multer/multer.module.d.ts",
       "../node_modules/@nestjs/platform-express/multer/index.d.ts",
       "../node_modules/@nestjs/platform-express/index.d.ts",
-      "../src/products/products.controller.ts",
-      "../src/products/products.module.ts",
       "../src/carts/carts.dto.ts",
-      "../src/carts/carts.service.ts",
       "../src/carts/carts.controller.ts",
-      "../src/carts/carts.module.ts",
       "../src/counters/counters.controller.ts",
       "../src/counters/products.module.ts",
-      "../src/app.module.ts",
       "../node_modules/@nestjs/core/adapters/index.d.ts",
       "../node_modules/@nestjs/core/injector/module-token-factory.d.ts",
       "../node_modules/@nestjs/core/injector/modules-container.d.ts",
@@ -14210,7 +14207,6 @@
       "../node_modules/@nestjs/core/services/reflector.service.d.ts",
       "../node_modules/@nestjs/core/services/index.d.ts",
       "../node_modules/@nestjs/core/index.d.ts",
-      "../src/main.ts",
       "../node_modules/@types/anymatch/index.d.ts",
       "../node_modules/@babel/types/lib/index.d.ts",
       "../node_modules/@types/babel__generator/index.d.ts",
@@ -14257,8 +14253,7 @@
       "../node_modules/@types/webpack-sources/index.d.ts",
       "../node_modules/@types/webpack/index.d.ts",
       "../node_modules/@types/yargs-parser/index.d.ts",
-      "../node_modules/@types/yargs/index.d.ts",
-      "../src/products/products.service.ts"
+      "../node_modules/@types/yargs/index.d.ts"
     ]
   },
   "version": "3.7.5"

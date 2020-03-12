@@ -6,7 +6,7 @@ import { ProductsEntity } from 'src/products/products.entity';
 import CardsDTO from './carts.dto';
 import { threadId } from 'worker_threads';
 import { client} from '../counters/counters.service';
-
+import {minioClient } from '../products/products.service';
 @Injectable()
 export class CartsService {
   constructor(
@@ -59,8 +59,14 @@ export class CartsService {
     }
 
     async setCounter (item) {
+      let imgLink;
+      minioClient.presignedGetObject('europetrip', item.product.imgPath, 24*60*60, function(err, presignedUrl) {
+        if (err) return console.log(err)
+        imgLink = presignedUrl
+      })
       item.product.cartId = item.cartId;
       item.product.quantity =  + await client.hget(item.userId.toString(),item.productId.toString());
+      item.product.imgLink = imgLink;
       return await item.product
     }
 

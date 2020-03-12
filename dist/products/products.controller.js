@@ -14,6 +14,7 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const products_service_1 = require("./products.service");
+const platform_express_1 = require("@nestjs/platform-express");
 let ProductsController = class ProductsController {
     constructor(ProductsService) {
         this.ProductsService = ProductsService;
@@ -21,8 +22,8 @@ let ProductsController = class ProductsController {
     async showAllProducts(offset) {
         return await this.ProductsService.showProducts(offset);
     }
-    createNote(data) {
-        return this.ProductsService.create(data);
+    uploadFile(image, data) {
+        this.ProductsService.create(image, data);
     }
     readNote(id) {
         return this.ProductsService.read(id);
@@ -43,11 +44,12 @@ __decorate([
 ], ProductsController.prototype, "showAllProducts", null);
 __decorate([
     common_1.Post(),
-    __param(0, common_1.Body()),
+    common_1.UseInterceptors(platform_express_1.FilesInterceptor('image')),
+    __param(0, common_1.UploadedFiles()), __param(1, common_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
-], ProductsController.prototype, "createNote", null);
+], ProductsController.prototype, "uploadFile", null);
 __decorate([
     common_1.Get(':id'),
     __param(0, common_1.Param('id')),

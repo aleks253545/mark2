@@ -16,11 +16,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const typeorm_2 = require("typeorm");
+const path = require("path");
 const products_entity_1 = require("./products.entity");
 const users_entity_1 = require("../users/users.entity");
 const counters_service_1 = require("../counters/counters.service");
-var Minio = require('minio');
-var minioClient = new Minio.Client({
+var fs = require('fs'), Minio = require('minio');
+exports.minioClient = new Minio.Client({
     endPoint: 'localhost',
     port: 9000,
     useSSL: false,
@@ -39,10 +40,18 @@ let ProductsService = ProductsService_1 = class ProductsService {
             take: 10,
             skip: offset,
         });
-        return Promise.all(products.map(product => this.setCounter(product)));
+        if (products.length) {
+            return Promise.all(products.map(product => this.setCounter(product)));
+        }
     }
     async setCounter(product) {
         const totalQuantity = +await counters_service_1.client.get(product.id.toString());
+        let imgLink;
+        exports.minioClient.presignedGetObject('europetrip', product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
+            if (err)
+                return console.log(err);
+            imgLink = presignedUrl;
+        });
         if (totalQuantity > 0) {
             await counters_service_1.client.hmset('products', product.id.toString(), '1');
         }
@@ -50,12 +59,25 @@ let ProductsService = ProductsService_1 = class ProductsService {
             await counters_service_1.client.hmset('products', product.id.toString(), '0');
         }
         product.quantity = +await counters_service_1.client.hget('products', product.id.toString());
+        product.imgLink = imgLink;
         return product;
     }
-    async create(data) {
-        const product = await this.productsRepository.create(data);
-        await this.productsRepository.save(product);
+    async create(image, data) {
+        const prod = await this.productsRepository.create(data);
+        let product = await this.productsRepository.save(prod);
+        this.logger.debug(product);
         counters_service_1.client.set(product.id, data.quantity.toString());
+        let pathFile = path.resolve(`uploads/${image[0].filename}`);
+        var metaData = {
+            'Content-Type': 'application/octet-stream',
+            'X-Amz-Meta-Testing': 1234,
+            'example': 5678
+        };
+        await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
+            if (err)
+                return console.log(err);
+            console.log('File uploaded successfully.');
+        });
         return product;
     }
     async read(id) {

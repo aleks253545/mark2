@@ -15,8 +15,8 @@ const carts_entity_1 = require("../carts/carts.entity");
 let ProductsEntity = class ProductsEntity {
 };
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn('uuid'),
     typeorm_1.OneToMany(type => carts_entity_1.CartsEntity, carts => carts.productId),
+    typeorm_1.PrimaryGeneratedColumn('uuid'),
     __metadata("design:type", String)
 ], ProductsEntity.prototype, "id", void 0);
 __decorate([

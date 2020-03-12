@@ -1,7 +1,7 @@
-import { Controller, Get, Post, Delete, Put, Body, Param, Query, UseInterceptors, UploadedFile } from '@nestjs/common';
+import { Controller, Get, Post, Delete, Put, Body, Param, Query, UseInterceptors, UploadedFile, UploadedFiles, Res } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ProductsDTO} from './products.dto'
-import {FileInterceptor} from '@nestjs/platform-express';
+import {FilesInterceptor} from '@nestjs/platform-express';
 
 @Controller('products')
 export class ProductsController {
@@ -14,21 +14,16 @@ export class ProductsController {
   }
 
   @Post()
-  createNote(@Body() data: ProductsDTO){  
-    return this.ProductsService.create(data);
+  @UseInterceptors(FilesInterceptor('image'))
+  uploadFile(@UploadedFiles() image, @Body() data: ProductsDTO) {
+    this.ProductsService.create(image, data);
   }
-
-  // @Post('upload')
-  // @UseInterceptors(FileInterceptor('files'))
-  // uploadFile(@UploadedFile() files) {
-  //   this.ProductsService.create(files);
-  // }
 
   @Get(':id')
   readNote(@Param('id') id:string) {
     return this.ProductsService.read(id);
   }
-  
+ 
   @Put(':id')
   updateNote(@Param('id') id:string, @Body() data) {
     return this.ProductsService.update(id, data)

@@ -19,6 +19,7 @@ const typeorm_1 = require("typeorm");
 const typeorm_2 = require("@nestjs/typeorm");
 const products_entity_1 = require("../products/products.entity");
 const counters_service_1 = require("../counters/counters.service");
+const products_service_1 = require("../products/products.service");
 let CartsService = CartsService_1 = class CartsService {
     constructor(cartsRepository, notesRepository) {
         this.cartsRepository = cartsRepository;
@@ -64,8 +65,15 @@ let CartsService = CartsService_1 = class CartsService {
         return Promise.all(cartList.map(item => this.setCounter(item)));
     }
     async setCounter(item) {
+        let imgLink;
+        products_service_1.minioClient.presignedGetObject('europetrip', item.product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
+            if (err)
+                return console.log(err);
+            imgLink = presignedUrl;
+        });
         item.product.cartId = item.cartId;
         item.product.quantity = +await counters_service_1.client.hget(item.userId.toString(), item.productId.toString());
+        item.product.imgLink = imgLink;
         return await item.product;
     }
     async destroy(cartId) {
