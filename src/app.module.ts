@@ -20,7 +20,7 @@ import { CountersModule} from './counters/products.module'
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5431,
+      port: 5432,
       username: 'postgres',
       password: 'aleks1998',
       database: 'postgres',
