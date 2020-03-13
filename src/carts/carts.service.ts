@@ -55,15 +55,17 @@ export class CartsService {
         },
         relations:['product']
       }); 
-    return  Promise.all(cartList.map(item => this.setCounter(item)))
+    return  Promise.all(cartList.map(item => this.SetAnyParams(item)))
     }
 
-    async setCounter (item) {
+    async SetAnyParams (item) {
       let imgLink;
-      minioClient.presignedGetObject('europetrip', item.product.imgPath, 24*60*60, function(err, presignedUrl) {
-        if (err) return console.log(err)
-        imgLink = presignedUrl
-      })
+      if (item.product.imgPath) {
+        minioClient.presignedGetObject('europetrip', item.product.imgPath, 24*60*60, function(err, presignedUrl) {
+          if (err) return console.log(err)
+          imgLink = presignedUrl
+        })
+      }
       item.product.cartId = item.cartId;
       item.product.quantity =  + await client.hget(item.userId.toString(),item.productId.toString());
       item.product.imgLink = imgLink;
@@ -77,11 +79,12 @@ export class CartsService {
             await client.set(cartRec[0].productId, (cartCounter + totalQuantity).toString());
             await client.del(cartRec[0].userId);
     await this.cartsRepository.delete({cartId});
-    return await this.cartsRepository.find({
+    let products =  await this.cartsRepository.find({
       where: {
         userId: cartRec[0].userId
       }
     })
+    return Promise.all(products.map(product => this.SetAnyParams(product)))
     }
     
     async update(data: {userId: string, type: string}){
@@ -95,8 +98,10 @@ export class CartsService {
         for(let i = 0; i < prodIds.length; i++){
             let cartCounter = + await client.hget(data.userId.toString(),prodIds[i].productId.toString()),
             totalQuantity = + await client.get(prodIds[i].productId.toString());
+            this.logger.debug(totalQuantity);
+            this.logger.debug(cartCounter);
             await client.set(prodIds[i].productId.toString(), (cartCounter + totalQuantity).toString());
-            await client.del(data.userId.toString());
+            await client.hset(data.userId.toString(),prodIds[i].productId,0);
         } 
       } else if(data.type === 'buy') {
           await client.del(data.userId.toString());

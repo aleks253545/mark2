@@ -9,8 +9,8 @@ export declare class CartsService {
     private readonly logger;
     create(data: CardsDTO): Promise<number>;
     getAllCartRecord(userId: string): Promise<any[]>;
-    setCounter(item: any): Promise<any>;
-    destroy(cartId: string): Promise<CartsEntity[]>;
+    SetAnyParams(item: any): Promise<any>;
+    destroy(cartId: string): Promise<any[]>;
     update(data: {
         userId: string;
         type: string;

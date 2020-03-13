@@ -25,8 +25,9 @@ export class ProductsController {
   }
  
   @Put(':id')
-  updateNote(@Param('id') id:string, @Body() data) {
-    return this.ProductsService.update(id, data)
+  @UseInterceptors(FilesInterceptor('image'))
+  updateProduct(@Param('id') id:string, @UploadedFiles() image, @Body() data) {
+    return this.ProductsService.update(id, data, image);
   }
 
   @Delete(':id')

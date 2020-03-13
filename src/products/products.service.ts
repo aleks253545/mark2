@@ -6,6 +6,7 @@ import { ProductsEntity } from 'src/products/products.entity';
 import { ProductsDTO } from './products.dto';
 import { UsersEntity } from 'src/users/users.entity';
 import { client } from '../counters/counters.service';
+import { Cron } from '@nestjs/schedule';
 import { fstat } from 'fs';
 var fs = require('fs'),
  Minio = require('minio');
@@ -16,7 +17,11 @@ export var minioClient = new Minio.Client({
   accessKey: 'minioadmin',
   secretKey: 'minioadmin'
 });
-let file = '/README.md';
+const metaData = {
+  'Content-Type': 'application/octet-stream',
+  'X-Amz-Meta-Testing': 1234,
+  'example': 5678
+}
 @Injectable()
 export class ProductsService {
   constructor(
@@ -33,24 +38,30 @@ export class ProductsService {
         skip: offset,
       });
       if(products.length){
-        return  Promise.all(products.map(product => this.setCounter(product)))
+        return  Promise.all(products.map(product => this.SetAnyParams(product,'get')))
       }
       
     }
 
-    async setCounter (product) {
-      const totalQuantity = + await  client.get(product.id.toString());
-      let imgLink ;
-      minioClient.presignedGetObject('europetrip', product.imgPath, 24*60*60, function(err, presignedUrl) {
-        if (err) return console.log(err)
-        imgLink = presignedUrl
-      })
-      if( totalQuantity > 0 ){
-        await client.hmset('products',product.id.toString(),'1');
-      } else { 
-        await client.hmset('products',product.id.toString(),'0');
+    async SetAnyParams (product,type) {
+      let imgLink ='';
+      if (product.imgPath) {
+        minioClient.presignedGetObject('europetrip', product.imgPath, 24*60*60, function(err, presignedUrl) {
+          if (err) return console.log(err)
+          imgLink = presignedUrl
+        })
       }
-      product.quantity =  + await  client.hget('products',product.id.toString());
+      const totalQuantity = + await  client.get(product.id.toString());
+      if( type === 'get') {
+        if( totalQuantity > 0 ){
+          await client.hmset('products',product.id.toString(),'1');
+        } else { 
+          await client.hmset('products',product.id.toString(),'0');
+        }
+        product.quantity =  + await  client.hget('products',product.id.toString());
+      } else if (type === 'edit') {
+        product.quantity =  + totalQuantity;
+      }
       product.imgLink = imgLink;
       return product;
     }
@@ -59,26 +70,46 @@ export class ProductsService {
       const prod = await this.productsRepository.create(data);
       let product = await this.productsRepository.save(prod);
       this.logger.debug(product);
-      client.set(product.id, data.quantity.toString());
-      let pathFile = path.resolve(`uploads/${image[0].filename}`);
-        var metaData = {
-            'Content-Type': 'application/octet-stream',
-            'X-Amz-Meta-Testing': 1234,
-            'example': 5678
-        }
-       await minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function(err, etag) {
+      await client.set(product.id, data.quantity.toString());
+      if(image.length){
+        let pathFile = path.resolve(`uploads/${image[0].filename}`);
+        await minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function(err, etag) {
           if (err) return console.log(err)
-          console.log('File uploaded successfully.')
-        });  
+          console.log('File uploaded successfully.');
+          fs.unlink(pathFile, (err)=>{
+            console.log('unlink', err);
+          });
+        });
+      } 
         return product   
     }
+
+
     async read(id: string) {
-      return await this.productsRepository.findOne({
+      let product = await this.productsRepository.findOne({
         where: {id}
       });
+      return this.SetAnyParams(product,'edit');
     }
-    async update( id: string, data) {
-      await this.productsRepository.update({id}, data);
+
+
+    async update( id: string, data, image) {
+      await this.productsRepository.update({id}, {
+        name: data.name,
+        description: data.description
+      });
+      await client.set(id,data.quantity.toString());
+      this.logger.debug(image);
+      if(image.length) {
+        let pathFile = path.resolve(`uploads/${image[0].filename}`);
+        await minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function(err, etag) {
+          if (err) return console.log(err)
+          console.log('File uploaded successfully.')
+        });
+        await this.productsRepository.update({id}, {
+          imgPath: data.imgPath
+        });
+      }
       const note = await this.productsRepository.findOne({id});
       return note;
     }
@@ -87,4 +118,6 @@ export class ProductsService {
       await this.productsRepository.delete({id}); 
       return {deleted: true}
     }
+
+
 }

@@ -28,8 +28,8 @@ let ProductsController = class ProductsController {
     readNote(id) {
         return this.ProductsService.read(id);
     }
-    updateNote(id, data) {
-        return this.ProductsService.update(id, data);
+    updateProduct(id, image, data) {
+        return this.ProductsService.update(id, data, image);
     }
     destroyNote(id) {
         return this.ProductsService.destroy(id);
@@ -59,11 +59,12 @@ __decorate([
 ], ProductsController.prototype, "readNote", null);
 __decorate([
     common_1.Put(':id'),
-    __param(0, common_1.Param('id')), __param(1, common_1.Body()),
+    common_1.UseInterceptors(platform_express_1.FilesInterceptor('image')),
+    __param(0, common_1.Param('id')), __param(1, common_1.UploadedFiles()), __param(2, common_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", void 0)
-], ProductsController.prototype, "updateNote", null);
+], ProductsController.prototype, "updateProduct", null);
 __decorate([
     common_1.Delete(':id'),
     __param(0, common_1.Param('id')),

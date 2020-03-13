@@ -31,7 +31,6 @@ let CountersService = CountersService_1 = class CountersService {
     }
     async update(id, data) {
         const prodTotalQuantity = +await exports.client.get(id.toString()), prodCounter = +await exports.client.hget('products', id.toString());
-        this.logger.debug(prodTotalQuantity);
         if (data.page === 'products') {
             if (data.value > 0 && data.value < prodTotalQuantity || data.value === prodTotalQuantity) {
                 await exports.client.hmset('products', id.toString(), data.value.toString());
@@ -58,6 +57,9 @@ let CountersService = CountersService_1 = class CountersService {
             else {
                 return cartCounter;
             }
+        }
+        else {
+            return cartCounter;
         }
     }
     async destroy(data) {

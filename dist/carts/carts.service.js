@@ -62,15 +62,17 @@ let CartsService = CartsService_1 = class CartsService {
             },
             relations: ['product']
         });
-        return Promise.all(cartList.map(item => this.setCounter(item)));
+        return Promise.all(cartList.map(item => this.SetAnyParams(item)));
     }
-    async setCounter(item) {
+    async SetAnyParams(item) {
         let imgLink;
-        products_service_1.minioClient.presignedGetObject('europetrip', item.product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
-            if (err)
-                return console.log(err);
-            imgLink = presignedUrl;
-        });
+        if (item.product.imgPath) {
+            products_service_1.minioClient.presignedGetObject('europetrip', item.product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
+                if (err)
+                    return console.log(err);
+                imgLink = presignedUrl;
+            });
+        }
         item.product.cartId = item.cartId;
         item.product.quantity = +await counters_service_1.client.hget(item.userId.toString(), item.productId.toString());
         item.product.imgLink = imgLink;
@@ -82,11 +84,12 @@ let CartsService = CartsService_1 = class CartsService {
         await counters_service_1.client.set(cartRec[0].productId, (cartCounter + totalQuantity).toString());
         await counters_service_1.client.del(cartRec[0].userId);
         await this.cartsRepository.delete({ cartId });
-        return await this.cartsRepository.find({
+        let products = await this.cartsRepository.find({
             where: {
                 userId: cartRec[0].userId
             }
         });
+        return Promise.all(products.map(product => this.SetAnyParams(product)));
     }
     async update(data) {
         let prodIds = await this.cartsRepository.find({
@@ -98,8 +101,10 @@ let CartsService = CartsService_1 = class CartsService {
         if (data.type === 'clear') {
             for (let i = 0; i < prodIds.length; i++) {
                 let cartCounter = +await counters_service_1.client.hget(data.userId.toString(), prodIds[i].productId.toString()), totalQuantity = +await counters_service_1.client.get(prodIds[i].productId.toString());
+                this.logger.debug(totalQuantity);
+                this.logger.debug(cartCounter);
                 await counters_service_1.client.set(prodIds[i].productId.toString(), (cartCounter + totalQuantity).toString());
-                await counters_service_1.client.del(data.userId.toString());
+                await counters_service_1.client.hset(data.userId.toString(), prodIds[i].productId, 0);
             }
         }
         else if (data.type === 'buy') {

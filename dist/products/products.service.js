@@ -20,6 +20,7 @@ const path = require("path");
 const products_entity_1 = require("./products.entity");
 const users_entity_1 = require("../users/users.entity");
 const counters_service_1 = require("../counters/counters.service");
+const schedule_1 = require("@nestjs/schedule");
 var fs = require('fs'), Minio = require('minio');
 exports.minioClient = new Minio.Client({
     endPoint: 'localhost',
@@ -28,7 +29,11 @@ exports.minioClient = new Minio.Client({
     accessKey: 'minioadmin',
     secretKey: 'minioadmin'
 });
-let file = '/README.md';
+const metaData = {
+    'Content-Type': 'application/octet-stream',
+    'X-Amz-Meta-Testing': 1234,
+    'example': 5678
+};
 let ProductsService = ProductsService_1 = class ProductsService {
     constructor(productsRepository, usersRepository) {
         this.productsRepository = productsRepository;
@@ -41,24 +46,31 @@ let ProductsService = ProductsService_1 = class ProductsService {
             skip: offset,
         });
         if (products.length) {
-            return Promise.all(products.map(product => this.setCounter(product)));
+            return Promise.all(products.map(product => this.SetAnyParams(product, 'get')));
         }
     }
-    async setCounter(product) {
+    async SetAnyParams(product, type) {
+        let imgLink = '';
+        if (product.imgPath) {
+            exports.minioClient.presignedGetObject('europetrip', product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
+                if (err)
+                    return console.log(err);
+                imgLink = presignedUrl;
+            });
+        }
         const totalQuantity = +await counters_service_1.client.get(product.id.toString());
-        let imgLink;
-        exports.minioClient.presignedGetObject('europetrip', product.imgPath, 24 * 60 * 60, function (err, presignedUrl) {
-            if (err)
-                return console.log(err);
-            imgLink = presignedUrl;
-        });
-        if (totalQuantity > 0) {
-            await counters_service_1.client.hmset('products', product.id.toString(), '1');
+        if (type === 'get') {
+            if (totalQuantity > 0) {
+                await counters_service_1.client.hmset('products', product.id.toString(), '1');
+            }
+            else {
+                await counters_service_1.client.hmset('products', product.id.toString(), '0');
+            }
+            product.quantity = +await counters_service_1.client.hget('products', product.id.toString());
         }
-        else {
-            await counters_service_1.client.hmset('products', product.id.toString(), '0');
+        else if (type === 'edit') {
+            product.quantity = +totalQuantity;
         }
-        product.quantity = +await counters_service_1.client.hget('products', product.id.toString());
         product.imgLink = imgLink;
         return product;
     }
@@ -67,26 +79,43 @@ let ProductsService = ProductsService_1 = class ProductsService {
         let product = await this.productsRepository.save(prod);
         this.logger.debug(product);
         counters_service_1.client.set(product.id, data.quantity.toString());
-        let pathFile = path.resolve(`uploads/${image[0].filename}`);
-        var metaData = {
-            'Content-Type': 'application/octet-stream',
-            'X-Amz-Meta-Testing': 1234,
-            'example': 5678
-        };
-        await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
-            if (err)
-                return console.log(err);
-            console.log('File uploaded successfully.');
-        });
+        if (image.length) {
+            let pathFile = path.resolve(`uploads/${image[0].filename}`);
+            await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
+                if (err)
+                    return console.log(err);
+                console.log('File uploaded successfully.');
+                fs.unlink(pathFile, (err) => {
+                    console.log('unlink', err);
+                });
+            });
+        }
         return product;
     }
     async read(id) {
-        return await this.productsRepository.findOne({
+        let product = await this.productsRepository.findOne({
             where: { id }
         });
+        return this.SetAnyParams(product, 'edit');
     }
-    async update(id, data) {
-        await this.productsRepository.update({ id }, data);
+    async update(id, data, image) {
+        await this.productsRepository.update({ id }, {
+            name: data.name,
+            description: data.description
+        });
+        await counters_service_1.client.set(id, data.quantity.toString());
+        this.logger.debug(image);
+        if (image.length) {
+            let pathFile = path.resolve(`uploads/${image[0].filename}`);
+            await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
+                if (err)
+                    return console.log(err);
+                console.log('File uploaded successfully.');
+            });
+            await this.productsRepository.update({ id }, {
+                imgPath: data.imgPath
+            });
+        }
         const note = await this.productsRepository.findOne({ id });
         return note;
     }
@@ -94,7 +123,22 @@ let ProductsService = ProductsService_1 = class ProductsService {
         await this.productsRepository.delete({ id });
         return { deleted: true };
     }
+    handleCron() {
+        let directory = path.resolve('uploads');
+        fs.readdir(directory, (err, files) => {
+            for (const file of files) {
+                fs.unlink(path.join(directory, file), err => {
+                });
+            }
+        });
+    }
 };
+__decorate([
+    schedule_1.Cron('45 * * * * *'),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
+], ProductsService.prototype, "handleCron", null);
 ProductsService = ProductsService_1 = __decorate([
     common_1.Injectable(),
     __param(0, typeorm_1.InjectRepository(products_entity_1.ProductsEntity)),
