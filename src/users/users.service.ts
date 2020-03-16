@@ -5,8 +5,8 @@ import { Cron } from '@nestjs/schedule';
 
 import { UsersEntity } from './users.entity';
 import { UsersDTO } from './users.dto';
-
-
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 @Injectable()
 export class UsersService {
   constructor(
@@ -17,7 +17,8 @@ export class UsersService {
     private readonly logger = new Logger(UsersService.name)
 
     async create(data: UsersDTO):Promise<UsersEntity> {
-      const user = await this.userRepository.create(data);
+      const hashPassword = bcrypt.hashSync(data.password, saltRounds);
+      const user = await this.userRepository.create({...data, password: hashPassword});
       await this.userRepository.save(user);
       return user; 
     }

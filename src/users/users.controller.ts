@@ -5,10 +5,11 @@ import { AuthService } from '../auth/auth.service';
 import { UsersDTO} from './users.dto'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('users')
 export class UsersController {
-  constructor(private UserService: UsersService,private readonly authService: AuthService) {}
+  constructor(private UserService: UsersService,private readonly authService: AuthService,     private readonly jwtService: JwtService,) {}
   @UseGuards(JwtAuthGuard)
   @Get('')
   getProfile(@Request() req) {
@@ -16,8 +17,12 @@ export class UsersController {
   }
 
   @Post()
-  createUser(@Body() data: UsersDTO): Promise<UsersEntity>{ 
-    return this.UserService.create(data);
+  async createUser(@Body() data: UsersDTO) { 
+    const user = await this.UserService.create(data);
+    const payload = { username: user.username, sub: user.id };
+    return {
+      access_token: this.jwtService.sign(payload),
+    };
   }
 
   // @Get(':id')

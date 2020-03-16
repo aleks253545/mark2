@@ -28,6 +28,7 @@ const jwt_1 = require("@nestjs/jwt");
 const users_entity_1 = require("../users/users.entity");
 const typeorm_decorators_1 = require("@nestjs/typeorm/dist/common/typeorm.decorators");
 const typeorm_1 = require("typeorm");
+const bcrypt = require('bcrypt');
 let AuthService = class AuthService {
     constructor(jwtService, usersRepository) {
         this.jwtService = jwtService;
@@ -35,7 +36,7 @@ let AuthService = class AuthService {
     }
     async validateUser(username, pass) {
         const user = await this.usersRepository.findOne({ username });
-        if (user && user.password === pass) {
+        if (user && bcrypt.compareSync(pass, user.password)) {
             const { password } = user, result = __rest(user, ["password"]);
             return result;
         }

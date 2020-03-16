@@ -10,6 +10,6 @@ export declare class CartsService {
     create(data: CardsDTO, userId: string): Promise<number>;
     getAllCartRecord(userId: string): Promise<any[]>;
     SetAnyParams(item: any): Promise<any>;
-    destroy(cartId: string, userId: string): Promise<any[]>;
+    destroy(cartId: string, userId: string): Promise<void | any[]>;
     update(type: string, userId: string): Promise<any[]>;
 }

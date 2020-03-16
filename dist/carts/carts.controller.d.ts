@@ -10,5 +10,5 @@ export declare class CartsController {
     updateCart(data: {
         type: string;
     }, req: any): Promise<any[]>;
-    destroyCartRecord(id: string, req: any): Promise<any[]>;
+    destroyCartRecord(id: string, req: any): Promise<void | any[]>;
 }

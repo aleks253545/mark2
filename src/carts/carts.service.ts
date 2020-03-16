@@ -78,16 +78,15 @@ export class CartsService {
         let cartCounter = + await client.hget(cartRec.userId, cartRec.productId),
         totalQuantity = + await client.get(cartRec.productId);
               await client.set(cartRec.productId, (cartCounter + totalQuantity).toString());
-              await client.del(cartRec.userId);
+              await client.hset(cartRec.userId, cartRec.productId, '');
         await this.cartsRepository.delete({cartId});
+        return this.getAllCartRecord(userId)
       }
-      let products =  await this.cartsRepository.find({
-        where: {
-          userId: userId
-        }
-      })
-      return Promise.all(products.map(product => this.SetAnyParams(product)))
+      
+      return console.error('incorrect id');
+      
     } 
+
     async update(type:string ,userId:string){
       let prodIds = await this.cartsRepository.find({
         where: {
