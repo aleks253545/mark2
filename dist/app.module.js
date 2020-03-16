@@ -21,6 +21,7 @@ const schedule_1 = require("@nestjs/schedule");
 const counters_controller_1 = require("./counters/counters.controller");
 const counters_service_1 = require("./counters/counters.service");
 const multer_module_1 = require("@nestjs/platform-express/multer/multer.module");
+const auth_module_1 = require("./auth/auth.module");
 let AppModule = class AppModule {
 };
 AppModule = __decorate([
@@ -29,7 +30,7 @@ AppModule = __decorate([
             typeorm_1.TypeOrmModule.forRoot({
                 type: 'postgres',
                 host: 'localhost',
-                port: 5431,
+                port: 5432,
                 username: 'postgres',
                 password: 'aleks1998',
                 database: 'postgres',
@@ -39,6 +40,7 @@ AppModule = __decorate([
             users_module_1.UsersModule,
             products_module_1.ProductsModule,
             carts_module_1.CartsModule,
+            auth_module_1.AuthModule,
             multer_module_1.MulterModule.register({
                 dest: './uploads'
             }),

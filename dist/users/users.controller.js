@@ -14,34 +14,32 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const local_auth_guard_1 = require("../auth/guards/local-auth.guard");
 let UsersController = class UsersController {
-    constructor(UserService) {
+    constructor(UserService, authService) {
         this.UserService = UserService;
+        this.authService = authService;
     }
-    readByLog(login, password) {
-        return this.UserService.readByLog(login, password);
+    getProfile(req) {
+        return req.user;
     }
     createUser(data) {
         return this.UserService.create(data);
     }
-    readuser(id) {
-        return this.UserService.read(id);
-    }
-    updateUser(id, data) {
-        return this.UserService.update(id, data);
-    }
-    destroyUser(id) {
-        return this.UserService.destroy(id);
+    async login(req) {
+        return this.authService.login(req.user);
     }
 };
 __decorate([
-    common_1.Get(),
-    __param(0, common_1.Query('login')),
-    __param(1, common_1.Query('password')),
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    common_1.Get(''),
+    __param(0, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, String]),
+    __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
-], UsersController.prototype, "readByLog", null);
+], UsersController.prototype, "getProfile", null);
 __decorate([
     common_1.Post(),
     __param(0, common_1.Body()),
@@ -50,29 +48,16 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
 __decorate([
-    common_1.Get(':id'),
-    __param(0, common_1.Param('id')),
+    common_1.UseGuards(local_auth_guard_1.LocalAuthGuard),
+    common_1.Post('auth'),
+    __param(0, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "readuser", null);
-__decorate([
-    common_1.Put(),
-    __param(0, common_1.Param('id')), __param(1, common_1.Body()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "updateUser", null);
-__decorate([
-    common_1.Delete(':id'),
-    __param(0, common_1.Param('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], UsersController.prototype, "destroyUser", null);
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UsersController.prototype, "login", null);
 UsersController = __decorate([
     common_1.Controller('users'),
-    __metadata("design:paramtypes", [users_service_1.UsersService])
+    __metadata("design:paramtypes", [users_service_1.UsersService, auth_service_1.AuthService])
 ], UsersController);
 exports.UsersController = UsersController;
 //# sourceMappingURL=users.controller.js.map

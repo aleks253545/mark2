@@ -15,13 +15,16 @@ import { CountersController } from './counters/counters.controller';
 import { CountersService } from './counters/counters.service';
 import { CountersModule} from './counters/products.module'
 import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
+import { AuthModule } from './auth/auth.module';
+import { AuthService } from './auth/auth.service';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: 'localhost',
-      port: 5431,
+      port: 5432,
       username: 'postgres',
       password: 'aleks1998',
       database: 'postgres',
@@ -31,6 +34,7 @@ import { MulterModule } from '@nestjs/platform-express/multer/multer.module';
     UsersModule,
     ProductsModule,
     CartsModule,
+    AuthModule,
     MulterModule.register({
       dest: './uploads'
     }),

@@ -5,5 +5,5 @@ export interface ProductsDTO {
         path: string;
     };
     quantity: string;
-    user: string;
+    userId: string;
 }

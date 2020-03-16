@@ -20,7 +20,6 @@ const path = require("path");
 const products_entity_1 = require("./products.entity");
 const users_entity_1 = require("../users/users.entity");
 const counters_service_1 = require("../counters/counters.service");
-const schedule_1 = require("@nestjs/schedule");
 var fs = require('fs'), Minio = require('minio');
 exports.minioClient = new Minio.Client({
     endPoint: 'localhost',
@@ -77,8 +76,7 @@ let ProductsService = ProductsService_1 = class ProductsService {
     async create(image, data) {
         const prod = await this.productsRepository.create(data);
         let product = await this.productsRepository.save(prod);
-        this.logger.debug(product);
-        counters_service_1.client.set(product.id, data.quantity.toString());
+        await counters_service_1.client.set(product.id, data.quantity.toString());
         if (image.length) {
             let pathFile = path.resolve(`uploads/${image[0].filename}`);
             await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
@@ -98,47 +96,35 @@ let ProductsService = ProductsService_1 = class ProductsService {
         });
         return this.SetAnyParams(product, 'edit');
     }
-    async update(id, data, image) {
-        await this.productsRepository.update({ id }, {
-            name: data.name,
-            description: data.description
-        });
-        await counters_service_1.client.set(id, data.quantity.toString());
-        this.logger.debug(image);
-        if (image.length) {
-            let pathFile = path.resolve(`uploads/${image[0].filename}`);
-            await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
-                if (err)
-                    return console.log(err);
-                console.log('File uploaded successfully.');
-            });
+    async update(id, data, image, userId) {
+        const user = await this.productsRepository.findOne({ id });
+        if (user.userId === userId) {
             await this.productsRepository.update({ id }, {
-                imgPath: data.imgPath
+                name: data.name,
+                description: data.description
             });
+            await counters_service_1.client.set(id, data.quantity.toString());
+            this.logger.debug(image);
+            if (image.length) {
+                let pathFile = path.resolve(`uploads/${image[0].filename}`);
+                await exports.minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function (err, etag) {
+                    if (err)
+                        return console.log(err);
+                    console.log('File uploaded successfully.');
+                });
+                await this.productsRepository.update({ id }, {
+                    imgPath: data.imgPath
+                });
+            }
         }
-        const note = await this.productsRepository.findOne({ id });
-        return note;
+        const product = await this.productsRepository.findOne({ id });
+        return product;
     }
     async destroy(id) {
         await this.productsRepository.delete({ id });
         return { deleted: true };
     }
-    handleCron() {
-        let directory = path.resolve('uploads');
-        fs.readdir(directory, (err, files) => {
-            for (const file of files) {
-                fs.unlink(path.join(directory, file), err => {
-                });
-            }
-        });
-    }
 };
-__decorate([
-    schedule_1.Cron('45 * * * * *'),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", void 0)
-], ProductsService.prototype, "handleCron", null);
 ProductsService = ProductsService_1 = __decorate([
     common_1.Injectable(),
     __param(0, typeorm_1.InjectRepository(products_entity_1.ProductsEntity)),

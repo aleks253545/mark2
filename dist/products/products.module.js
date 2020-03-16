@@ -12,11 +12,12 @@ const products_controller_1 = require("./products.controller");
 const products_service_1 = require("./products.service");
 const products_entity_1 = require("./products.entity");
 const users_module_1 = require("../users/users.module");
+const auth_module_1 = require("../auth/auth.module");
 let ProductsModule = class ProductsModule {
 };
 ProductsModule = __decorate([
     common_1.Module({
-        imports: [typeorm_1.TypeOrmModule.forFeature([products_entity_1.ProductsEntity]), users_module_1.UsersModule],
+        imports: [typeorm_1.TypeOrmModule.forFeature([products_entity_1.ProductsEntity]), users_module_1.UsersModule, auth_module_1.AuthModule],
         controllers: [products_controller_1.ProductsController],
         providers: [products_service_1.ProductsService],
         exports: [typeorm_1.TypeOrmModule, users_module_1.UsersModule]

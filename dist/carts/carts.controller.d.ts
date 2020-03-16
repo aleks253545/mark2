@@ -1,13 +1,14 @@
 import { CartsService } from './carts.service';
 import CardsDTO from './carts.dto';
+import { AuthService } from '../auth/auth.service';
 export declare class CartsController {
     private CartsService;
-    constructor(CartsService: CartsService);
-    createCartRecord(data: CardsDTO): Promise<number>;
-    getAllCartProduct(userId: string): Promise<any[]>;
+    private readonly authService;
+    constructor(CartsService: CartsService, authService: AuthService);
+    createCartRecord(data: CardsDTO, req: any): Promise<number>;
+    getAllCartProduct(req: any): Promise<any[]>;
     updateCart(data: {
-        userId: string;
         type: string;
-    }): Promise<any[]>;
-    destroyCartRecord(id: string): Promise<any[]>;
+    }, req: any): Promise<any[]>;
+    destroyCartRecord(id: string, req: any): Promise<any[]>;
 }

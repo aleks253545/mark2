@@ -26,7 +26,7 @@ __decorate([
         unique: true
     }),
     __metadata("design:type", String)
-], UsersEntity.prototype, "login", void 0);
+], UsersEntity.prototype, "username", void 0);
 __decorate([
     typeorm_1.Column('text'),
     __metadata("design:type", String)

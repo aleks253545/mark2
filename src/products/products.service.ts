@@ -69,7 +69,6 @@ export class ProductsService {
     async create(image, data: ProductsDTO) {
       const prod = await this.productsRepository.create(data);
       let product = await this.productsRepository.save(prod);
-      this.logger.debug(product);
       await client.set(product.id, data.quantity.toString());
       if(image.length){
         let pathFile = path.resolve(`uploads/${image[0].filename}`);
@@ -93,31 +92,32 @@ export class ProductsService {
     }
 
 
-    async update( id: string, data, image) {
-      await this.productsRepository.update({id}, {
-        name: data.name,
-        description: data.description
-      });
-      await client.set(id,data.quantity.toString());
-      this.logger.debug(image);
-      if(image.length) {
-        let pathFile = path.resolve(`uploads/${image[0].filename}`);
-        await minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function(err, etag) {
-          if (err) return console.log(err)
-          console.log('File uploaded successfully.')
-        });
+    async update( id: string, data, image, userId) {
+      const user = await this.productsRepository.findOne({id});
+      if( user.userId === userId){
         await this.productsRepository.update({id}, {
-          imgPath: data.imgPath
+          name: data.name,
+          description: data.description
         });
+        await client.set(id,data.quantity.toString());
+        this.logger.debug(image);
+        if(image.length) {
+          let pathFile = path.resolve(`uploads/${image[0].filename}`);
+          await minioClient.fPutObject('europetrip', image[0].originalname, pathFile, metaData, function(err, etag) {
+            if (err) return console.log(err)
+            console.log('File uploaded successfully.')
+          });
+          await this.productsRepository.update({id}, {
+            imgPath: data.imgPath
+          });
+        }
       }
-      const note = await this.productsRepository.findOne({id});
-      return note;
+      const product = await this.productsRepository.findOne({id});
+      return product;
     }
 
     async destroy(id: string) {
       await this.productsRepository.delete({id}); 
       return {deleted: true}
     }
-
-
 }

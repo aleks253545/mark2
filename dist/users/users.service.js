@@ -32,25 +32,6 @@ let UsersService = UsersService_1 = class UsersService {
             where: { id }
         });
     }
-    async readByLog(login, password) {
-        const user = await this.userRepository.findOne({
-            where: [
-                {
-                    login,
-                    password
-                }
-            ]
-        });
-        return user.id;
-    }
-    async update(id, data) {
-        await this.userRepository.update({ id }, data);
-        return await this.userRepository.findOne({ id });
-    }
-    async destroy(id) {
-        await this.userRepository.delete({ id });
-        return { deleted: true };
-    }
 };
 UsersService = UsersService_1 = __decorate([
     common_1.Injectable(),

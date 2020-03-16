@@ -12,7 +12,7 @@ export class UsersEntity {
     type:'text',
     unique:true  
   })
-  login: string;
+  username: string;
 
   @Column('text')
   password: string;

@@ -15,24 +15,24 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const products_service_1 = require("./products.service");
 const platform_express_1 = require("@nestjs/platform-express");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const auth_service_1 = require("../auth/auth.service");
 let ProductsController = class ProductsController {
-    constructor(ProductsService) {
+    constructor(ProductsService, authService) {
         this.ProductsService = ProductsService;
+        this.authService = authService;
     }
     async showAllProducts(offset) {
         return await this.ProductsService.showProducts(offset);
     }
-    uploadFile(image, data) {
-        this.ProductsService.create(image, data);
+    uploadFile(image, data, req) {
+        this.ProductsService.create(image, Object.assign(Object.assign({}, data), { userId: req.user.userId }));
     }
     readNote(id) {
         return this.ProductsService.read(id);
     }
-    updateProduct(id, image, data) {
-        return this.ProductsService.update(id, data, image);
-    }
-    destroyNote(id) {
-        return this.ProductsService.destroy(id);
+    updateProduct(id, image, data, req) {
+        return this.ProductsService.update(id, data, image, req.user.userId);
     }
 };
 __decorate([
@@ -43,11 +43,12 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], ProductsController.prototype, "showAllProducts", null);
 __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Post(),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor('image')),
-    __param(0, common_1.UploadedFiles()), __param(1, common_1.Body()),
+    __param(0, common_1.UploadedFiles()), __param(1, common_1.Body()), __param(2, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:paramtypes", [Object, Object, Object]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "uploadFile", null);
 __decorate([
@@ -58,23 +59,18 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "readNote", null);
 __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Put(':id'),
     common_1.UseInterceptors(platform_express_1.FilesInterceptor('image')),
-    __param(0, common_1.Param('id')), __param(1, common_1.UploadedFiles()), __param(2, common_1.Body()),
+    __param(0, common_1.Param('id')), __param(1, common_1.UploadedFiles()), __param(2, common_1.Body()), __param(3, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String, Object, Object]),
+    __metadata("design:paramtypes", [String, Object, Object, Object]),
     __metadata("design:returntype", void 0)
 ], ProductsController.prototype, "updateProduct", null);
-__decorate([
-    common_1.Delete(':id'),
-    __param(0, common_1.Param('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], ProductsController.prototype, "destroyNote", null);
 ProductsController = __decorate([
     common_1.Controller('products'),
-    __metadata("design:paramtypes", [products_service_1.ProductsService])
+    __metadata("design:paramtypes", [products_service_1.ProductsService,
+        auth_service_1.AuthService])
 ], ProductsController);
 exports.ProductsController = ProductsController;
 //# sourceMappingURL=products.controller.js.map

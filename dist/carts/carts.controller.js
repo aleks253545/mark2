@@ -14,54 +14,62 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const carts_service_1 = require("./carts.service");
+const auth_service_1 = require("../auth/auth.service");
+const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 let CartsController = class CartsController {
-    constructor(CartsService) {
+    constructor(CartsService, authService) {
         this.CartsService = CartsService;
+        this.authService = authService;
     }
-    createCartRecord(data) {
-        return this.CartsService.create(data);
+    createCartRecord(data, req) {
+        return this.CartsService.create(data, req.user.userId);
     }
-    getAllCartProduct(userId) {
-        return this.CartsService.getAllCartRecord(userId);
+    getAllCartProduct(req) {
+        return this.CartsService.getAllCartRecord(req.user.userId);
     }
-    updateCart(data) {
-        return this.CartsService.update(data);
+    updateCart(data, req) {
+        return this.CartsService.update(data.type, req.user.userId);
     }
-    destroyCartRecord(id) {
-        return this.CartsService.destroy(id);
+    destroyCartRecord(id, req) {
+        return this.CartsService.destroy(id, req.user.userId);
     }
 };
 __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Post(),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [Object, Object]),
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "createCartRecord", null);
 __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
-    __param(0, common_1.Query('userId')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CartsController.prototype, "getAllCartProduct", null);
-__decorate([
-    common_1.Put(),
-    __param(0, common_1.Body()),
+    __param(0, common_1.Request()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Object]),
     __metadata("design:returntype", void 0)
+], CartsController.prototype, "getAllCartProduct", null);
+__decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
+    common_1.Put(),
+    __param(0, common_1.Body()), __param(1, common_1.Request()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object, Object]),
+    __metadata("design:returntype", void 0)
 ], CartsController.prototype, "updateCart", null);
 __decorate([
+    common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Delete(':id'),
-    __param(0, common_1.Param('id')),
+    __param(0, common_1.Param('id')), __param(1, common_1.Request()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
+    __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "destroyCartRecord", null);
 CartsController = __decorate([
     common_1.Controller('carts'),
-    __metadata("design:paramtypes", [carts_service_1.CartsService])
+    __metadata("design:paramtypes", [carts_service_1.CartsService,
+        auth_service_1.AuthService])
 ], CartsController);
 exports.CartsController = CartsController;
 //# sourceMappingURL=carts.controller.js.map

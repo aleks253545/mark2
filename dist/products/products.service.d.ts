@@ -12,9 +12,8 @@ export declare class ProductsService {
     SetAnyParams(product: any, type: any): Promise<any>;
     create(image: any, data: ProductsDTO): Promise<ProductsEntity>;
     read(id: string): Promise<any>;
-    update(id: string, data: any, image: any): Promise<ProductsEntity>;
+    update(id: string, data: any, image: any, userId: any): Promise<ProductsEntity>;
     destroy(id: string): Promise<{
         deleted: boolean;
     }>;
-    handleCron(): void;
 }

@@ -4,5 +4,5 @@ export interface ProductsDTO {
   descriptiton: string,
   image:{path:string,},
   quantity: string,
-  user: string
+  userId: string
 }

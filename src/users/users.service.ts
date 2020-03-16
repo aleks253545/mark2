@@ -27,24 +27,14 @@ export class UsersService {
         where: {id}
       });
     }
-    async readByLog(login: string, password: string) {
-      const user = await this.userRepository.findOne({
-        where: [
-          {
-            login,
-            password
-          }
-        ]
-      });
-      return user.id;
-    }
-    async update(id: string, data) {
-      await this.userRepository.update({id}, data);
-      return await this.userRepository.findOne({id});
-    }
 
-    async destroy(id: string) {
-      await this.userRepository.delete({id});
-      return {deleted: true}
-    }
+    // async update(id: string, data) {
+    //   await this.userRepository.update({id}, data);
+    //   return await this.userRepository.findOne({id});
+    // }
+
+    // async destroy(id: string) {
+    //   await this.userRepository.delete({id});
+    //   return {deleted: true}
+    // }
 }

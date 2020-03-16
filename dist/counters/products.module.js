@@ -10,11 +10,12 @@ const common_1 = require("@nestjs/common");
 const typeorm_1 = require("@nestjs/typeorm");
 const counters_controller_1 = require("./counters.controller");
 const counters_service_1 = require("./counters.service");
+const auth_module_1 = require("../auth/auth.module");
 let CountersModule = class CountersModule {
 };
 CountersModule = __decorate([
     common_1.Module({
-        imports: [],
+        imports: [auth_module_1.AuthModule],
         controllers: [counters_controller_1.CountersController],
         providers: [counters_service_1.CountersService],
         exports: [typeorm_1.TypeOrmModule]
