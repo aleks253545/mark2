@@ -25,8 +25,9 @@ let UsersController = class UsersController {
     getProfile(req) {
         return req.user;
     }
-    createUser(data) {
-        return this.UserService.create(data);
+    async createUser(data) {
+        const user = await this.UserService.create(data);
+        return this.authService.login(user);
     }
     async login(req) {
         return this.authService.login(req.user);

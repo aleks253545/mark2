@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Cron } from '@nestjs/schedule';
-
 import { UsersEntity } from './users.entity';
 import { UsersDTO } from './users.dto';
 const bcrypt = require('bcrypt');
