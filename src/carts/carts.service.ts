@@ -18,14 +18,15 @@ export class CartsService {
 
     private readonly logger = new Logger(CartsService.name);
 
-    async create(data: CardsDTO, userId: string) {
+    async create(data, userId: string) {
+      this.logger.debug(data);
       const record = await this.cartsRepository.find({
         where: {
           userId,
           productId : data.productId
         }
       })
-      const porductsCounter = + await  client.hget('products',data.productId.toString()),
+      const porductsCounter = data.counter,
       totalQuantity = +  await  client.get(data.productId.toString());
       if(totalQuantity > porductsCounter || totalQuantity === porductsCounter){
         if( record.length){ 
@@ -38,14 +39,20 @@ export class CartsService {
           const card = await this.cartsRepository.create({...data, userId});
           await this.cartsRepository.save(card);
         }
-        if((totalQuantity - porductsCounter) > 0){
-          await client.hset('products',data.productId.toString(),'1');
-        } else {
-          await client.hset('products',data.productId.toString(),'0');
-        }
+      } else { 
+        await client.hset(userId.toString(), data.productId.toString(), totalQuantity.toString());
+        await client.set(data.productId.toString(), '0');
       }
-      return   + await client.hget('products',data.productId.toString());
-      
+      this.logger.debug(userId);
+      this.logger.debug(data.productId);
+     let maxQuantity =  + await client.get(data.productId.toString()),
+      cartQuantity =  + await client.hget(userId.toString(), data.productId.toString()); 
+      this.logger.debug(maxQuantity);
+      this.logger.debug(cartQuantity);
+      return {
+        maxQuantity,
+        cartQuantity
+      }
     }
 
     async getAllCartRecord(userId: string) {
@@ -80,7 +87,7 @@ export class CartsService {
               await client.set(cartRec.productId, (cartCounter + totalQuantity).toString());
               await client.hset(cartRec.userId, cartRec.productId, '');
         await this.cartsRepository.delete({cartId});
-        return this.getAllCartRecord(userId)
+        return cartRec.productId
       }
       
       return console.error('incorrect id');

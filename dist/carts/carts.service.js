@@ -27,13 +27,14 @@ let CartsService = CartsService_1 = class CartsService {
         this.logger = new common_1.Logger(CartsService_1.name);
     }
     async create(data, userId) {
+        this.logger.debug(data);
         const record = await this.cartsRepository.find({
             where: {
                 userId,
                 productId: data.productId
             }
         });
-        const porductsCounter = +await counters_service_1.client.hget('products', data.productId.toString()), totalQuantity = +await counters_service_1.client.get(data.productId.toString());
+        const porductsCounter = data.counter, totalQuantity = +await counters_service_1.client.get(data.productId.toString());
         if (totalQuantity > porductsCounter || totalQuantity === porductsCounter) {
             if (record.length) {
                 const cartCounter = +await counters_service_1.client.hget(userId.toString(), data.productId.toString());
@@ -46,14 +47,20 @@ let CartsService = CartsService_1 = class CartsService {
                 const card = await this.cartsRepository.create(Object.assign(Object.assign({}, data), { userId }));
                 await this.cartsRepository.save(card);
             }
-            if ((totalQuantity - porductsCounter) > 0) {
-                await counters_service_1.client.hset('products', data.productId.toString(), '1');
-            }
-            else {
-                await counters_service_1.client.hset('products', data.productId.toString(), '0');
-            }
         }
-        return +await counters_service_1.client.hget('products', data.productId.toString());
+        else {
+            await counters_service_1.client.hset(userId.toString(), data.productId.toString(), totalQuantity.toString());
+            await counters_service_1.client.set(data.productId.toString(), '0');
+        }
+        this.logger.debug(userId);
+        this.logger.debug(data.productId);
+        let maxQuantity = +await counters_service_1.client.get(data.productId.toString()), cartQuantity = +await counters_service_1.client.hget(userId.toString(), data.productId.toString());
+        this.logger.debug(maxQuantity);
+        this.logger.debug(cartQuantity);
+        return {
+            maxQuantity,
+            cartQuantity
+        };
     }
     async getAllCartRecord(userId) {
         let cartList = await this.cartsRepository.find({
@@ -85,7 +92,7 @@ let CartsService = CartsService_1 = class CartsService {
             await counters_service_1.client.set(cartRec.productId, (cartCounter + totalQuantity).toString());
             await counters_service_1.client.hset(cartRec.userId, cartRec.productId, '');
             await this.cartsRepository.delete({ cartId });
-            return this.getAllCartRecord(userId);
+            return cartRec.productId;
         }
         return console.error('incorrect id');
     }

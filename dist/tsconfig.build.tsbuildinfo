@@ -2358,7 +2358,7 @@
         "signature": "8f1241f5d9f0d3d72117768b3c974e462840fbd85026fb66685078945404cf2f"
       },
       "../src/products/products.service.ts": {
-        "version": "d6c08f82549dd4ed57ef9e38a997cf312f8772c13e158b31349de8da724f4ba4",
+        "version": "fbd27771a724dd0f625837fb13e24bbf93bdf7df6972f560ab1e2bfc2f851474",
         "signature": "cd1ff2c3c983327b891cbd82aded19242ce503841a76b7048939e8f7b5f330c9"
       },
       "../node_modules/@nestjs/core/adapters/http-adapter.d.ts": {
@@ -2442,12 +2442,12 @@
         "signature": "0a86518d6cb88c158afda011ee1c8c5852dfa337127c6382f786fdea3b322801"
       },
       "../src/carts/carts.service.ts": {
-        "version": "cfd64e4bf84f991cd55f2297e91e9b554b558620a932c2a0d63d019445aa4558",
-        "signature": "cd107f1722c21d3321a2651c0143774874a385324fedcab0053fad5b0e5bd0e9"
+        "version": "0399a174154c775c0a92a2c43dd70efa945c6e2caebabc360f1c6e5cf0fe4323",
+        "signature": "0d1441d6f649f9cdd4ca8b25ddfb9e77c2c3fb39b39fcc8877ebaa2d4ff1c5c4"
       },
       "../src/carts/carts.controller.ts": {
-        "version": "128228482a7ed9c0a73fa063ed5a36617748a77ab12b4c0ec0476e124c3bbade",
-        "signature": "9ce27f6a15133798538b47684d8462a0135708c58fd091dbc3ad1642b70add30"
+        "version": "6bf3768d1d298de47367e46716af2c15a61c953ef012eebc806083deb603fcc5",
+        "signature": "5a4adb67770668f540e3a7e62fdb75f5f9e94977a0ffc7adab37a3190ebee749"
       },
       "../src/carts/carts.module.ts": {
         "version": "76a48ecfbd0e67236a34dbcc22975dbd34f2324705c69e8823aa2c72d29277b5",
@@ -13529,13 +13529,11 @@
       "../src/carts/carts.service.ts": [
         "../node_modules/typeorm/index.d.ts",
         "../src/carts/carts.entity.ts",
-        "../src/products/products.entity.ts",
-        "../src/carts/carts.dto.ts"
+        "../src/products/products.entity.ts"
       ],
       "../src/carts/carts.controller.ts": [
         "../src/carts/carts.service.ts",
-        "../src/auth/auth.service.ts",
-        "../src/carts/carts.dto.ts"
+        "../src/auth/auth.service.ts"
       ],
       "../src/counters/counters.controller.ts": [
         "../src/counters/counters.service.ts",
@@ -14714,6 +14712,7 @@
       "../node_modules/@nestjs/passport/index.d.ts",
       "../src/auth/guards/jwt-auth.guard.ts",
       "../src/auth/guards/local-auth.guard.ts",
+      "../src/users/users.controller.ts",
       "../src/auth/constants.ts",
       "../node_modules/@types/passport-strategy/index.d.ts",
       "../node_modules/@types/passport-jwt/index.d.ts",
@@ -14721,6 +14720,7 @@
       "../node_modules/@types/passport-local/index.d.ts",
       "../src/auth/strategies/local.strategy.ts",
       "../src/auth/auth.module.ts",
+      "../src/users/users.module.ts",
       "../src/products/products.dto.ts",
       "../node_modules/@types/redis/ts3.1/index.d.ts",
       "../src/counters/counters.service.ts",
@@ -14755,11 +14755,11 @@
       "../src/products/products.controller.ts",
       "../src/products/products.module.ts",
       "../src/carts/carts.dto.ts",
-      "../src/carts/carts.service.ts",
       "../src/carts/carts.controller.ts",
       "../src/carts/carts.module.ts",
       "../src/counters/counters.controller.ts",
       "../src/counters/products.module.ts",
+      "../src/app.module.ts",
       "../node_modules/@nestjs/core/adapters/index.d.ts",
       "../node_modules/@nestjs/core/injector/module-token-factory.d.ts",
       "../node_modules/@nestjs/core/injector/modules-container.d.ts",
@@ -14836,9 +14836,7 @@
       "../node_modules/@types/webpack/index.d.ts",
       "../node_modules/@types/yargs-parser/index.d.ts",
       "../node_modules/@types/yargs/index.d.ts",
-      "../src/users/users.controller.ts",
-      "../src/app.module.ts",
-      "../src/users/users.module.ts"
+      "../src/carts/carts.service.ts"
     ]
   },
   "version": "3.7.5"

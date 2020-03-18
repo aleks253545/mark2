@@ -54,11 +54,11 @@ export class ProductsService {
       const totalQuantity = + await  client.get(product.id.toString());
       if( type === 'get') {
         if( totalQuantity > 0 ){
-          await client.hmset('products',product.id.toString(),'1');
+          product.quantity =  1;
         } else { 
-          await client.hmset('products',product.id.toString(),'0');
+          product.quantity =  0;
         }
-        product.quantity =  + await  client.hget('products',product.id.toString());
+        product.maxQuantitiy = totalQuantity;
       } else if (type === 'edit') {
         product.quantity =  + totalQuantity;
       }

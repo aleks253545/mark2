@@ -60,12 +60,12 @@ let ProductsService = ProductsService_1 = class ProductsService {
         const totalQuantity = +await counters_service_1.client.get(product.id.toString());
         if (type === 'get') {
             if (totalQuantity > 0) {
-                await counters_service_1.client.hmset('products', product.id.toString(), '1');
+                product.quantity = 1;
             }
             else {
-                await counters_service_1.client.hmset('products', product.id.toString(), '0');
+                product.quantity = 0;
             }
-            product.quantity = +await counters_service_1.client.hget('products', product.id.toString());
+            product.maxQuantitiy = totalQuantity;
         }
         else if (type === 'edit') {
             product.quantity = +totalQuantity;
