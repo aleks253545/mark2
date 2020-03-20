@@ -1,4 +1,4 @@
-export interface UsersDTO {
+export declare class UsersDTO {
     login: string;
     password: string;
 }

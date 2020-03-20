@@ -15,8 +15,11 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const common_1 = require("@nestjs/common");
 const users_service_1 = require("./users.service");
 const auth_service_1 = require("../auth/auth.service");
+const users_dto_1 = require("./users.dto");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
 const local_auth_guard_1 = require("../auth/guards/local-auth.guard");
+const api_basic_decorator_1 = require("@nestjs/swagger/dist/decorators/api-basic.decorator");
+const api_header_decorator_1 = require("@nestjs/swagger/dist/decorators/api-header.decorator");
 let UsersController = class UsersController {
     constructor(UserService, authService) {
         this.UserService = UserService;
@@ -34,6 +37,11 @@ let UsersController = class UsersController {
     }
 };
 __decorate([
+    api_header_decorator_1.ApiHeader({
+        name: 'Authorization',
+        description: 'user jwt token',
+    }),
+    api_basic_decorator_1.ApiBasicAuth(),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(''),
     __param(0, common_1.Request()),
@@ -45,10 +53,11 @@ __decorate([
     common_1.Post(),
     __param(0, common_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
+    __metadata("design:paramtypes", [users_dto_1.UsersDTO]),
     __metadata("design:returntype", Promise)
 ], UsersController.prototype, "createUser", null);
 __decorate([
+    api_basic_decorator_1.ApiBasicAuth(),
     common_1.UseGuards(local_auth_guard_1.LocalAuthGuard),
     common_1.Post('auth'),
     __param(0, common_1.Request()),

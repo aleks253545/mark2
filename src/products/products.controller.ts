@@ -4,6 +4,10 @@ import { ProductsDTO} from './products.dto'
 import {FilesInterceptor} from '@nestjs/platform-express';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { AuthService} from '../auth/auth.service'
+import { ApiBasicAuth } from '@nestjs/swagger/dist/decorators/api-basic.decorator';
+import { ApiBody } from '@nestjs/swagger/dist/decorators/api-body.decorator';
+import { ApiProperty } from '@nestjs/swagger/dist/decorators/api-property.decorator';
+import { ApiHeader } from '@nestjs/swagger/dist/decorators/api-header.decorator';
 
 @Controller('products')
 export class ProductsController {
@@ -13,10 +17,15 @@ export class ProductsController {
     ) {}
 
   @Get()
-  async showAllProducts(@Query('offset') offset: string,) {
+  async showAllProducts(@Query('offset') offset: number,) {
     return  await this.ProductsService.showProducts(offset);
   }
 
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'user jwt token',
+  })
+  @ApiBasicAuth()
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FilesInterceptor('image'))
@@ -28,11 +37,16 @@ export class ProductsController {
   readNote(@Param('id') id:string) {
     return this.ProductsService.read(id);
   }
-
+  
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'user jwt token',
+  })
+  @ApiBasicAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   @UseInterceptors(FilesInterceptor('image'))
-  updateProduct(@Param('id') id:string, @UploadedFiles() image, @Body() data, @Request() req) {
+  updateProduct(@Param('id') id:string, @UploadedFiles() image, @Body() data:ProductsDTO, @Request() req) {
     return this.ProductsService.update(id, data, image, req.user.userId);
   }
 

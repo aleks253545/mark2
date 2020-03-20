@@ -27,7 +27,6 @@ let CartsService = CartsService_1 = class CartsService {
         this.logger = new common_1.Logger(CartsService_1.name);
     }
     async create(data, userId) {
-        this.logger.debug(data);
         const record = await this.cartsRepository.find({
             where: {
                 userId,
@@ -52,14 +51,10 @@ let CartsService = CartsService_1 = class CartsService {
             await counters_service_1.client.hset(userId.toString(), data.productId.toString(), totalQuantity.toString());
             await counters_service_1.client.set(data.productId.toString(), '0');
         }
-        this.logger.debug(userId);
-        this.logger.debug(data.productId);
         let maxQuantity = +await counters_service_1.client.get(data.productId.toString()), cartQuantity = +await counters_service_1.client.hget(userId.toString(), data.productId.toString());
-        this.logger.debug(maxQuantity);
-        this.logger.debug(cartQuantity);
         return {
             maxQuantity,
-            cartQuantity
+            cartQuantity,
         };
     }
     async getAllCartRecord(userId) {
@@ -85,12 +80,18 @@ let CartsService = CartsService_1 = class CartsService {
         item.product.imgLink = imgLink;
         return await item.product;
     }
-    async destroy(cartId, userId) {
-        let cartRec = await this.cartsRepository.findOne({ cartId });
+    async destroy(productId, userId) {
+        let cartRec = await this.cartsRepository.findOne({
+            where: {
+                userId,
+                productId: productId
+            }
+        });
         if (cartRec.userId === userId) {
             let cartCounter = +await counters_service_1.client.hget(cartRec.userId, cartRec.productId), totalQuantity = +await counters_service_1.client.get(cartRec.productId);
             await counters_service_1.client.set(cartRec.productId, (cartCounter + totalQuantity).toString());
             await counters_service_1.client.hset(cartRec.userId, cartRec.productId, '');
+            let cartId = cartRec.cartId;
             await this.cartsRepository.delete({ cartId });
             return cartRec.productId;
         }
@@ -106,8 +107,6 @@ let CartsService = CartsService_1 = class CartsService {
         if (type === 'clear') {
             for (let i = 0; i < prodIds.length; i++) {
                 let cartCounter = +await counters_service_1.client.hget(userId.toString(), prodIds[i].productId.toString()), totalQuantity = +await counters_service_1.client.get(prodIds[i].productId.toString());
-                this.logger.debug(totalQuantity);
-                this.logger.debug(cartCounter);
                 await counters_service_1.client.set(prodIds[i].productId.toString(), (cartCounter + totalQuantity).toString());
                 await counters_service_1.client.hset(userId.toString(), prodIds[i].productId, 0);
             }

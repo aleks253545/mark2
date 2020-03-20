@@ -16,6 +16,8 @@ const common_1 = require("@nestjs/common");
 const carts_service_1 = require("./carts.service");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const api_basic_decorator_1 = require("@nestjs/swagger/dist/decorators/api-basic.decorator");
+const api_header_decorator_1 = require("@nestjs/swagger/dist/decorators/api-header.decorator");
 let CartsController = class CartsController {
     constructor(CartsService, authService) {
         this.CartsService = CartsService;
@@ -35,6 +37,10 @@ let CartsController = class CartsController {
     }
 };
 __decorate([
+    api_header_decorator_1.ApiHeader({
+        name: 'Authorization',
+        description: 'user jwt token',
+    }),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Post(),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
@@ -43,6 +49,10 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "createCartRecord", null);
 __decorate([
+    api_header_decorator_1.ApiHeader({
+        name: 'Authorization',
+        description: 'user jwt token',
+    }),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Get(),
     __param(0, common_1.Request()),
@@ -51,6 +61,10 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "getAllCartProduct", null);
 __decorate([
+    api_header_decorator_1.ApiHeader({
+        name: 'Authorization',
+        description: 'user jwt token',
+    }),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Put(),
     __param(0, common_1.Body()), __param(1, common_1.Request()),
@@ -59,6 +73,10 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "updateCart", null);
 __decorate([
+    api_header_decorator_1.ApiHeader({
+        name: 'Authorization',
+        description: 'user jwt token',
+    }),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Delete(':id'),
     __param(0, common_1.Param('id')), __param(1, common_1.Request()),
@@ -67,6 +85,7 @@ __decorate([
     __metadata("design:returntype", void 0)
 ], CartsController.prototype, "destroyCartRecord", null);
 CartsController = __decorate([
+    api_basic_decorator_1.ApiBasicAuth(),
     common_1.Controller('carts'),
     __metadata("design:paramtypes", [carts_service_1.CartsService,
         auth_service_1.AuthService])

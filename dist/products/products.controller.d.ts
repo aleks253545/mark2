@@ -5,8 +5,8 @@ export declare class ProductsController {
     private readonly ProductsService;
     private readonly authService;
     constructor(ProductsService: ProductsService, authService: AuthService);
-    showAllProducts(offset: string): Promise<any[]>;
+    showAllProducts(offset: number): Promise<any[]>;
     uploadFile(image: any, data: ProductsDTO, req: any): void;
     readNote(id: string): Promise<any>;
-    updateProduct(id: string, image: any, data: any, req: any): Promise<import("./products.entity").ProductsEntity>;
+    updateProduct(id: string, image: any, data: ProductsDTO, req: any): Promise<import("./products.entity").ProductsEntity>;
 }

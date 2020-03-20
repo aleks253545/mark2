@@ -16,36 +16,18 @@ const common_1 = require("@nestjs/common");
 const counters_service_1 = require("./counters.service");
 const auth_service_1 = require("../auth/auth.service");
 const jwt_auth_guard_1 = require("../auth/guards/jwt-auth.guard");
+const api_basic_decorator_1 = require("@nestjs/swagger/dist/decorators/api-basic.decorator");
 let CountersController = class CountersController {
     constructor(CountersService, authService) {
         this.CountersService = CountersService;
         this.authService = authService;
     }
-    createNote(data) {
-    }
-    readNote(id) {
-    }
     updateNote(id, data, req) {
         return this.CountersService.update(id, Object.assign(Object.assign({}, data), { userId: req.user.userId }));
     }
-    destroyNote(id) {
-    }
 };
 __decorate([
-    common_1.Post(),
-    __param(0, common_1.Body()),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Object]),
-    __metadata("design:returntype", void 0)
-], CountersController.prototype, "createNote", null);
-__decorate([
-    common_1.Get(''),
-    __param(0, common_1.Param('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CountersController.prototype, "readNote", null);
-__decorate([
+    api_basic_decorator_1.ApiBasicAuth(),
     common_1.UseGuards(jwt_auth_guard_1.JwtAuthGuard),
     common_1.Put(':id'),
     __param(0, common_1.Param('id')), __param(1, common_1.Body()), __param(2, common_1.Request()),
@@ -53,13 +35,6 @@ __decorate([
     __metadata("design:paramtypes", [String, Object, Object]),
     __metadata("design:returntype", void 0)
 ], CountersController.prototype, "updateNote", null);
-__decorate([
-    common_1.Delete(''),
-    __param(0, common_1.Param('id')),
-    __metadata("design:type", Function),
-    __metadata("design:paramtypes", [String]),
-    __metadata("design:returntype", void 0)
-], CountersController.prototype, "destroyNote", null);
 CountersController = __decorate([
     common_1.Controller('counters'),
     __metadata("design:paramtypes", [counters_service_1.CountersService,

@@ -32,7 +32,7 @@ export class ProductsService {
     ) {}
     private readonly logger = new Logger(ProductsService.name);
 
-    async showProducts(offset){
+    async showProducts(offset: number){
       const products = await this.productsRepository.find({
         take:10,
         skip: offset,

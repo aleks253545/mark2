@@ -1,9 +1,6 @@
-export interface ProductsDTO {
+export declare class ProductsDTO {
     name: string;
     descriptiton: string;
-    image: {
-        path: string;
-    };
     quantity: string;
     userId: string;
 }

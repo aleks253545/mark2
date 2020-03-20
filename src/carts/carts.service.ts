@@ -19,7 +19,6 @@ export class CartsService {
     private readonly logger = new Logger(CartsService.name);
 
     async create(data, userId: string) {
-      this.logger.debug(data);
       const record = await this.cartsRepository.find({
         where: {
           userId,
@@ -43,15 +42,13 @@ export class CartsService {
         await client.hset(userId.toString(), data.productId.toString(), totalQuantity.toString());
         await client.set(data.productId.toString(), '0');
       }
-      this.logger.debug(userId);
-      this.logger.debug(data.productId);
+
      let maxQuantity =  + await client.get(data.productId.toString()),
       cartQuantity =  + await client.hget(userId.toString(), data.productId.toString()); 
-      this.logger.debug(maxQuantity);
-      this.logger.debug(cartQuantity);
+
       return {
         maxQuantity,
-        cartQuantity
+        cartQuantity,
       }
     }
 
@@ -79,13 +76,19 @@ export class CartsService {
       return await item.product
     }
 
-    async destroy(cartId: string, userId:string ) {
-      let cartRec = await this.cartsRepository.findOne({cartId});
+    async destroy(productId: string, userId:string ) {
+      let cartRec = await this.cartsRepository.findOne({
+        where: {
+          userId,
+          productId : productId
+        }
+      });
       if( cartRec.userId === userId) {
         let cartCounter = + await client.hget(cartRec.userId, cartRec.productId),
         totalQuantity = + await client.get(cartRec.productId);
               await client.set(cartRec.productId, (cartCounter + totalQuantity).toString());
               await client.hset(cartRec.userId, cartRec.productId, '');
+        let cartId = cartRec.cartId;
         await this.cartsRepository.delete({cartId});
         return cartRec.productId
       }
@@ -105,8 +108,6 @@ export class CartsService {
         for(let i = 0; i < prodIds.length; i++){
             let cartCounter = + await client.hget(userId.toString(),prodIds[i].productId.toString()),
             totalQuantity = + await client.get(prodIds[i].productId.toString());
-            this.logger.debug(totalQuantity);
-            this.logger.debug(cartCounter);
             await client.set(prodIds[i].productId.toString(), (cartCounter + totalQuantity).toString());
             await client.hset(userId.toString(),prodIds[i].productId,0);
         } 

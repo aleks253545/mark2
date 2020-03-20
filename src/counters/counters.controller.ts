@@ -2,6 +2,7 @@ import { Controller, Get, Post, Delete, Put, Body, Param, UseGuards, Request } f
 import { CountersService } from './counters.service';
 import { AuthService } from 'src/auth/auth.service';
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
+import { ApiBasicAuth } from '@nestjs/swagger/dist/decorators/api-basic.decorator';
 
 @Controller('counters')
 export class CountersController {
@@ -10,16 +11,16 @@ export class CountersController {
     private readonly authService: AuthService
     ) {}
 
-  @Post()
-  createNote(@Body() data){  
-    // return this.CountersService.create(data);
-  }
+  // @Post()
+  // createNote(@Body() data){  
+  //   // return this.CountersService.create(data);
+  // }
 
-  @Get('')
-  readNote(@Param('id') id:string) {
-    // return this.CountersService.read(id);
-  }
-
+  // @Get('')
+  // readNote(@Param('id') id:string) {
+  //   // return this.CountersService.read(id);
+  // }
+  @ApiBasicAuth()
   @UseGuards(JwtAuthGuard)
   @Put(':id')
   updateNote(@Param('id') id:string, @Body() data, @Request() req) {
@@ -29,8 +30,8 @@ export class CountersController {
       })
   }
 
-  @Delete('')
-  destroyNote(@Param('id') id: string) {
-    // return this.CountersService.destroy(id)
-  }
+  // @Delete('')
+  // destroyNote(@Param('id') id: string) {
+  //   // return this.CountersService.destroy(id)
+  // }
 }

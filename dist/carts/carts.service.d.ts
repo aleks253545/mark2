@@ -12,6 +12,6 @@ export declare class CartsService {
     }>;
     getAllCartRecord(userId: string): Promise<any[]>;
     SetAnyParams(item: any): Promise<any>;
-    destroy(cartId: string, userId: string): Promise<string | void>;
+    destroy(productId: string, userId: string): Promise<string | void>;
     update(type: string, userId: string): Promise<any[]>;
 }

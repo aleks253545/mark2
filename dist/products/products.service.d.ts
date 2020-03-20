@@ -8,7 +8,7 @@ export declare class ProductsService {
     private readonly usersRepository;
     constructor(productsRepository: Repository<ProductsEntity>, usersRepository: Repository<UsersEntity>);
     private readonly logger;
-    showProducts(offset: any): Promise<any[]>;
+    showProducts(offset: number): Promise<any[]>;
     SetAnyParams(product: any, type: any): Promise<any>;
     create(image: any, data: ProductsDTO): Promise<ProductsEntity>;
     read(id: string): Promise<any>;

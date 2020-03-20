@@ -5,10 +5,17 @@ import { AuthService } from '../auth/auth.service';
 import { UsersDTO} from './users.dto'
 import { JwtAuthGuard } from 'src/auth/guards/jwt-auth.guard';
 import { LocalAuthGuard } from 'src/auth/guards/local-auth.guard';
-
+import { ApiBasicAuth } from '@nestjs/swagger/dist/decorators/api-basic.decorator';
+import { ApiHeader } from '@nestjs/swagger/dist/decorators/api-header.decorator';
 @Controller('users')
 export class UsersController {
   constructor(private UserService: UsersService,private readonly authService: AuthService) {}
+  
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'user jwt token',
+  })
+  @ApiBasicAuth()
   @UseGuards(JwtAuthGuard)
   @Get('')
   getProfile(@Request() req) {
@@ -35,7 +42,8 @@ export class UsersController {
   // destroyUser(@Param('id') id: string) {
   //   return this.UserService.destroy(id)
   // }
-  
+
+  @ApiBasicAuth()
   @UseGuards(LocalAuthGuard)
   @Post('auth')
   async login(@Request() req) {
